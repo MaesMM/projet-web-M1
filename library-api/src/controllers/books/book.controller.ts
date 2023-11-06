@@ -1,11 +1,12 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags } from "@nestjs/swagger";
 import {
   BookPresenter,
   PlainBookPresenter,
 } from 'library-api/src/controllers/books/book.presenter';
 import { BookId } from 'library-api/src/entities';
 import { BookUseCases } from 'library-api/src/useCases';
-
+@ApiTags("Books")
 @Controller('books')
 export class BookController {
   constructor(private readonly bookUseCases: BookUseCases) {}

@@ -4,9 +4,10 @@ import clsx from 'clsx';
 
 type ButtonProps = {
   icon?: StaticImageData;
-  text: string;
+  text?: string;
   onClick?: () => void;
   className?: string;
+  type?: 'button' | 'submit';
 };
 
 const Button = ({
@@ -14,9 +15,10 @@ const Button = ({
   text,
   onClick,
   className,
+  type,
 }: ButtonProps): React.ReactElement => (
   <button
-    type="button"
+    type={type === 'button' ? 'button' : 'submit'}
     onClick={(): void => {
       if (onClick) {
         onClick();
@@ -30,8 +32,7 @@ const Button = ({
     {icon && (
       <Image src={icon.src} alt="Pen" height={icon.height} width={icon.width} />
     )}
-
-    <span>{text}</span>
+    {text && <span>{text}</span>}
   </button>
 );
 
@@ -39,6 +40,8 @@ Button.defaultProps = {
   icon: undefined,
   className: undefined,
   onClick: (): void => {},
+  text: undefined,
+  type: 'button',
 };
 
 export default Button;

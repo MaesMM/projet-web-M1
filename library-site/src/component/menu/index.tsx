@@ -13,10 +13,10 @@ export default function Menu(): React.ReactElement {
   const url = usePathname();
 
   return (
-    <div className="flex-1 bg-white-500 rounded-xl shadow-container flex flex-col p-8 py-8 gap-8">
+    <div className="flex-1 bg-white-500 rounded-xl shadow flex flex-col p-8 py-8 gap-8">
       <div className="font-bold px-4 text-2xl">BookViewer</div>
       <div className="flex h-px bg-background" />
-      <div className="flex flex-1 flex-col gap-4">
+      <div className="flex flex-1 flex-col gap-2">
         <Button
           text="Home"
           icon={Home}
@@ -27,19 +27,19 @@ export default function Menu(): React.ReactElement {
           text="Livres"
           icon={Book}
           className={url === '/books' ? 'bg-gray-200' : undefined}
-          onClick={(): void => router.push('books')}
+          onClick={(): void => router.push('/books')}
         />
         <Button
           text="Auteurs"
           icon={Pen}
           className={url === '/authors' ? 'bg-gray-200' : undefined}
-          onClick={(): void => router.push('authors')}
+          onClick={(): void => router.push('/authors')}
         />
         <Button
           text="Utilisateurs"
           icon={User}
           className={url === '/users' ? 'bg-gray-200' : undefined}
-          onClick={(): void => router.push('users')}
+          onClick={(): void => router.push('/users')}
         />
       </div>
     </div>

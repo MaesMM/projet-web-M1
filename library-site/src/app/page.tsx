@@ -1,9 +1,7 @@
-import { FC, ReactElement } from 'react';
+'use client';
 
-const Home: FC = (): ReactElement => (
-  <main className="flex min-h-screen flex-col items-center justify-between p-24">
-    Home page
-  </main>
-);
+import React, { ReactElement } from 'react';
 
-export default Home;
+export default function Home(): ReactElement {
+  return <>Hello</>;
+}

@@ -12,7 +12,7 @@ type Props = {
   value?: string;
 };
 
-const Input = ({
+const SearchBar = ({
   onChange,
   className,
   placeholder,
@@ -39,11 +39,11 @@ const Input = ({
   </div>
 );
 
-Input.defaultProps = {
+SearchBar.defaultProps = {
   className: undefined,
   placeholder: undefined,
   value: undefined,
   onChange: (): void => {},
 };
 
-export default Input;
+export default SearchBar;

@@ -1,12 +1,9 @@
 'use client';
 
 import { FC, ReactElement, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { nanoid } from 'nanoid';
 // import { useBooksProviders } from '@/hooks';
-import Container from '@/component/container';
-import Input from '@/component/interaction/input/Search';
-import Row from '@/component/row';
+import Table from '@/component/table';
+import Sorter from '@/component/interaction/sorter';
 
 const books = [
   {
@@ -44,12 +41,12 @@ const books = [
   },
 ];
 
-const BooksPage: FC = (): ReactElement => {
-  //   const { useListBooks } = useBooksProviders();
-  //   const { books, load } = useListBooks();
+//   const { useListBooks } = useBooksProviders();
+//   const { books, load } = useListBooks();
 
-  //   useEffect(() => load, []);
-  const router = useRouter();
+//   useEffect(() => load, []);
+
+const BooksPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
   const [typeSort, setTypeSort] = useState('name');
 
@@ -62,57 +59,42 @@ const BooksPage: FC = (): ReactElement => {
       book.writtenOn.toString().includes(inputValue.toLowerCase()),
   );
 
-  const sortedBooks = [...filteredBooks].sort((a, b) => {
+  const orderedBooks = [...filteredBooks].sort((a, b) => {
     if (typeSort === 'name') {
       return a.name.localeCompare(b.name);
     }
     if (typeSort === 'date') {
-      return a.writtenOn - b.writtenOn;
+      const dataA = String(a.writtenOn);
+      const dataB = String(b.writtenOn);
+      return dataA.localeCompare(dataB);
     }
     return 0;
   });
 
+  const data = orderedBooks.map((book) => ({
+    href: book.id,
+    data: [
+      { label: 'Name', value: book.name },
+      { label: 'Written On', value: String(book.writtenOn) },
+      { label: 'Genres', value: book.genres.join(', ') },
+      {
+        label: 'Author',
+        value: `${book.author.firstName} ${book.author.lastName}`,
+      },
+    ],
+  }));
+
   return (
     <div className="flex flex-col gap-8">
-      <Container className="flex gap-8 justify-between relative">
-        <Input
-          placeholder="Search"
-          name="search"
-          type="text"
-          onChange={(e: string): void => setInputValue(e)}
-        />
-
-        <div className="flex gap-2 items-center">
-          <span>Trier par</span>
-          <select
-            onChange={(e): void => setTypeSort(e.target.value)}
-            className="px-4 py-2 bg-gray-200 rounded-xl"
-          >
-            <option value="name">Nom</option>
-            <option value="date">Date</option>
-          </select>
-        </div>
-      </Container>
-      <Container className="flex flex-col gap-4">
-        <span className="text-sm">{`${filteredBooks.length} livre(s) trouvé(s)`}</span>
-        <div className="flex flex-col gap-4">
-          {sortedBooks.map((book) => (
-            <Row
-              onClick={(): void => router.push(`/books/${book.id}`)}
-              data={[
-                { label: 'Titre', value: book.name },
-                {
-                  label: 'Auteur',
-                  value: `${book.author.firstName} ${book.author.lastName}`,
-                },
-                { label: 'Genres', value: book.genres.join(', ') },
-                { label: 'Date', value: book.writtenOn as unknown as string },
-              ]}
-              key={nanoid()}
-            />
-          ))}
-        </div>
-      </Container>
+      <Sorter
+        options={[
+          { label: 'Name', value: 'name' },
+          { label: 'Date', value: 'date' },
+        ]}
+        setInputValue={setInputValue}
+        setTypeSort={setTypeSort}
+      />
+      <Table data={data} />
     </div>
   );
 };

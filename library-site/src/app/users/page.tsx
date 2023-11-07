@@ -1,11 +1,8 @@
 'use client';
 
 import { FC, ReactElement, useState } from 'react';
-import { nanoid } from 'nanoid';
-import { useRouter } from 'next/navigation';
-import Container from '@/component/container';
-import Input from '@/component/interaction/input/Search';
-import Row from '@/component/row';
+import Table from '@/component/table';
+import Sorter from '@/component/interaction/sorter';
 
 const users = [
   {
@@ -40,12 +37,22 @@ const users = [
           lastName: 'Monteil',
         },
       },
+      {
+        id: '1',
+        name: 'Hello',
+        writtenOn: 2025,
+        genres: ['Science fiction, action, amour'],
+        author: {
+          id: '1',
+          firstName: 'Antoine',
+          lastName: 'Monteil',
+        },
+      },
     ],
   },
 ];
 
 const UsersPage: FC = (): ReactElement => {
-  const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [typeSort, setTypeSort] = useState('username');
 
@@ -57,41 +64,31 @@ const UsersPage: FC = (): ReactElement => {
     if (typeSort === 'username') {
       return a.username.localeCompare(b.username);
     }
+    if (typeSort === 'quantity') {
+      return a.books.length - b.books.length;
+    }
 
     return 0;
   });
+
+  const data = sortedUsers.map((user) => ({
+    href: user.id,
+    data: [
+      { label: 'Pseudonyme', value: user.username },
+      { label: 'Nombre de livre', value: String(user.books.length) },
+    ],
+  }));
   return (
     <div className="flex flex-col gap-8">
-      <Container className="flex gap-8 justify-between relative">
-        <Input
-          placeholder="Search"
-          name="search"
-          type="text"
-          onChange={(e: string): void => setInputValue(e)}
-        />
-
-        <div className="flex gap-2 items-center">
-          <span>Trier par</span>
-          <select
-            onChange={(e): void => setTypeSort(e.target.value)}
-            className="px-4 py-2 bg-gray-200 rounded-xl"
-          >
-            <option value="username">Pseudonyme</option>
-          </select>
-        </div>
-      </Container>
-      <Container className="flex flex-col gap-4">
-        <span className="text-sm">{`${sortedUsers.length} livre(s) trouvé(s)`}</span>
-        <div className="flex flex-col gap-4">
-          {sortedUsers.map((user) => (
-            <Row
-              onClick={(): void => router.push(`/users/${user.id}`)}
-              data={[{ label: 'Pseudonyme', value: user.username }]}
-              key={nanoid()}
-            />
-          ))}
-        </div>
-      </Container>
+      <Sorter
+        options={[
+          { label: 'Nombre de livre', value: 'quantity' },
+          { label: 'Pseudonyme', value: 'username' },
+        ]}
+        setInputValue={setInputValue}
+        setTypeSort={setTypeSort}
+      />
+      <Table data={data} />
     </div>
   );
 };

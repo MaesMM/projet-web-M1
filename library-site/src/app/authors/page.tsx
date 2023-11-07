@@ -1,11 +1,8 @@
 'use client';
 
 import { FC, ReactElement, useState } from 'react';
-import { nanoid } from 'nanoid';
-import { useRouter } from 'next/navigation';
-import Container from '@/component/container';
-import Input from '@/component/interaction/input/Search';
-import Row from '@/component/row';
+import Table from '@/component/table';
+import Sorter from '@/component/interaction/sorter';
 
 const authors = [
   {
@@ -26,7 +23,6 @@ const authors = [
 ];
 
 const AuthorsPage: FC = (): ReactElement => {
-  const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [typeSort, setTypeSort] = useState('firstname');
 
@@ -46,42 +42,25 @@ const AuthorsPage: FC = (): ReactElement => {
 
     return 0;
   });
+
+  const data = sortedAuthors.map((author) => ({
+    href: author.id,
+    data: [
+      { label: 'Prénom', value: author.firstName },
+      { label: 'Nom', value: author.lastName },
+    ],
+  }));
   return (
     <div className="flex flex-col gap-8">
-      <Container className="flex gap-8 justify-between relative">
-        <Input
-          placeholder="Search"
-          name="search"
-          type="text"
-          onChange={(e: string): void => setInputValue(e)}
-        />
-
-        <div className="flex gap-2 items-center">
-          <span>Trier par</span>
-          <select
-            onChange={(e): void => setTypeSort(e.target.value)}
-            className="px-4 py-2 bg-gray-200 rounded-xl"
-          >
-            <option value="lastName">Nom</option>
-            <option value="firstName">Prénom</option>
-          </select>
-        </div>
-      </Container>
-      <Container className="flex flex-col gap-4">
-        <span className="text-sm">{`${sortedAuthors.length} livre(s) trouvé(s)`}</span>
-        <div className="flex flex-col gap-4">
-          {sortedAuthors.map((author) => (
-            <Row
-              onClick={(): void => router.push(`/authors/${author.id}`)}
-              data={[
-                { label: 'Nom', value: author.lastName },
-                { label: 'Prenom', value: author.firstName },
-              ]}
-              key={nanoid()}
-            />
-          ))}
-        </div>
-      </Container>
+      <Sorter
+        options={[
+          { label: 'Prénom', value: 'firstName' },
+          { label: 'Nom', value: 'lastName' },
+        ]}
+        setInputValue={setInputValue}
+        setTypeSort={setTypeSort}
+      />
+      <Table data={data} />
     </div>
   );
 };

@@ -28,11 +28,12 @@ const BooksDetailsPage: FC = () => {
 
   const handleSubmitForm = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
+    console.log(e);
   };
 
   return (
     <Container className="flex flex-col gap-4">
-      <form className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex justify-between items-center w-full">
           <span className="text-xl font-medium">Information Generales</span>
           <div className="flex">
@@ -56,24 +57,26 @@ const BooksDetailsPage: FC = () => {
             <ListItem title="Titre">
               <input
                 name="name"
-                className="px-4 py-2 rounded-full"
+                className="px-4 py-2 rounded-full w-64"
                 defaultValue={book.name}
                 type="text"
               />
             </ListItem>
             <ListItem title="Auteur">
-              <select
-                value={book.author.id}
-                className="px-4 py-2 rounded-full"
-                name="author"
-              >
-                <option value="1">Antoine Monteil</option>
-              </select>
+              <div className="px-4 py-2 bg-[#FFFFFF] rounded-full w-64">
+                <select
+                  defaultValue={book.author.id}
+                  className="rounded-full w-full"
+                  name="author"
+                >
+                  <option value="1">Antoine Monteil</option>
+                </select>
+              </div>
             </ListItem>
             <ListItem title="Date">
               <input
                 name="date"
-                className="px-4 py-2 w-xl rounded-full"
+                className="px-4 py-2 w-xl rounded-full w-64"
                 defaultValue={book.writtenOn}
                 type="number"
               />
@@ -109,7 +112,7 @@ const BooksDetailsPage: FC = () => {
             </ListItem>
           </div>
         )}
-      </form>
+      </div>
     </Container>
   );
 };

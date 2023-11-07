@@ -20,11 +20,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="flex min-h-screen px-8 gap-8 py-8">
-          <Menu />
-          <div className="flex flex-[3] flex-col gap-8">
+        <main className="flex h-screen overflow-hidden px-8 gap-8 pt-8">
+          <div className="pb-8 flex flex-1">
+            <Menu />
+          </div>
+          <div className="flex flex-[3] flex-col">
             <Header />
-            {children}
+            <div className="overflow-y-scroll -mt-12 pt-20 pb-8">
+              {children}
+            </div>
           </div>
         </main>
       </body>

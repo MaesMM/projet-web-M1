@@ -7,7 +7,7 @@ import { ControllerModule } from 'library-api/src/controllers/controller.module'
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'data.db',
+      database: 'db',
       entities,
       synchronize: true,
     }),

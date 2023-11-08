@@ -49,15 +49,9 @@ export class BookUseCases {
   */
 
   public async create(bodyContent: CreateBookUseCasesInput): Promise<BookUseCasesOutput> {
-    return this.bookRepository.createBook(bodyContent);
+    return await this.bookRepository.createBook(bodyContent);
   }
 
-  // public async createBook(
-  //   input: CreateBookUseCasesInput,
-  // ): Promise<PlainBookUseCasesOutput> {
-  //   return this.bookRepository.createBook(input);
-  // }
- 
 
   /**
    * Update a book by its ID

@@ -25,6 +25,7 @@ export class BookController {
     private readonly authorUseCases: AuthorUseCases,
   ) {}
 
+
   @Get('/')
   public async getAll(): Promise<PlainBookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
@@ -47,6 +48,7 @@ export class BookController {
     // ou Promise<BookPresenter> pour renvoyer un objet
     const author = await this.authorUseCases.getById(bodyContent.authorId);
 
+
     if (!author) {
       // Handle the case where the author with the given ID doesn't exist
       throw new NotFoundError(`Author - '${bodyContent.authorId}'`);
@@ -64,7 +66,7 @@ export class BookController {
     return BookPresenter.from(createdBook);
   }
 
-  // @Patch('/:id')
+  // @Patch('/:id')  
   // public async updateBook(
   //   @Param('id') id: BookId,
   //   @Body() bodyContent: CreateBookDto,

@@ -1,6 +1,7 @@
 import { IsString, IsDate, IsNotEmpty, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { type } from 'os';
+import { AuthorId } from 'library-api/src/entities';
 
 export class CreateBookDto {
 
@@ -14,7 +15,7 @@ export class CreateBookDto {
 
   @IsString()
   @IsNotEmpty()
-  authorId: string;
+  authorId: AuthorId;
 
   @ApiProperty({ type: [String] })
   @IsArray()

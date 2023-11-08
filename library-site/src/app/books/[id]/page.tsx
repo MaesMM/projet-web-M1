@@ -1,61 +1,73 @@
+/* eslint-disable operator-linebreak */
+
 'use client';
 
 import { FC, FormEvent, useState } from 'react';
-import { useParams } from 'next/navigation';
-import { useQuery } from 'react-query';
+import { useParams, useRouter } from 'next/navigation';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import Container from '@/component/container';
 import ListItem from '@/component/listItem';
 import Edit from '../../../../public/Edit.svg';
 import Delete from '../../../../public/Delete.svg';
 import Button from '@/component/interaction/button';
-
-// import InputList from '@/component/interaction/input/List';
-import FormUpdate from '@/component/formUpdate';
-
-type Book = {
-  id: string;
-  name: string;
-  writtenOn: number;
-  genres: {
-    id: string;
-    name: string;
-  }[];
-  author: {
-    id: string;
-    firstName: string;
-    lastName: string;
-  };
-};
+import FormUpdate from '@/component/form/formUpdate';
+import { Author, Book } from '@/models';
+import { deleteBookByID, getBookByID } from '@/requests/books';
+import { getAuthors } from '@/requests/authors';
 
 const handleSubmitForm = (e: FormEvent<HTMLFormElement>): void => {
   e.preventDefault();
-  // console.log(e);
+  const formData = new FormData(e.target as HTMLFormElement);
+  const formValues = Object.fromEntries(formData.entries()) as {
+    [k: string]: string | string[];
+  };
+  const genres = formValues.genres as string;
+  formValues.genres = genres.split(',').map((genre: string) => genre.trim());
+  console.log(formValues);
 };
 
-async function fetchBook(id: string): Promise<Book> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/books/${id}`,
-  );
-  return response.json();
-}
-
 const BooksDetailsPage: FC = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [isModifying, setIsModifying] = useState(false);
-
   const { id } = useParams();
   const {
     data: book,
-    isLoading,
-    isError,
+    isLoading: isBookLoading,
+    isError: isBookError,
   } = useQuery<Book>({
     queryKey: ['book', id as string],
-    queryFn: () => fetchBook(id as string),
+    queryFn: () => getBookByID(id as string),
     enabled: !!id,
   });
 
-  if (isLoading || isError || !book) return <span>Loading...</span>;
+  const {
+    data: authors,
+    isLoading: isAuthorsLoading,
+    isError: isAuthorsError,
+  } = useQuery<Author[]>({
+    queryKey: ['authors'],
+    queryFn: () => getAuthors(),
+  });
 
-  console.log(book.genres.map((obj) => obj.name));
+  const booksMutation = useMutation({
+    mutationFn: () => deleteBookByID(id as string),
+    onSuccess: () => {
+      router.push('/books');
+      return queryClient.invalidateQueries(['books']);
+    },
+  });
+
+  if (
+    isBookLoading ||
+    isBookError ||
+    !book ||
+    isAuthorsError ||
+    isAuthorsLoading ||
+    !authors
+  ) {
+    return <span>Loading...</span>;
+  }
 
   return (
     <Container className="flex flex-col gap-4">
@@ -70,6 +82,7 @@ const BooksDetailsPage: FC = () => {
             />
             <Button
               Icon={<Delete />}
+              onClick={(): void => booksMutation.mutate()}
               className="hover:bg-red-500 text-white-500 hover:text-white-600"
             />
           </div>
@@ -91,7 +104,10 @@ const BooksDetailsPage: FC = () => {
                 name: 'author',
                 type: 'select',
                 defaultValue: book.author.id,
-                options: [{ value: '1', label: 'Antoine Monteil' }],
+                options: authors.map((author) => ({
+                  value: author.id,
+                  label: `${author.firstName} ${author.lastName}`,
+                })),
               },
               {
                 label: 'Date',

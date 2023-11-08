@@ -3,10 +3,12 @@
 
 'use client';
 
-import { FC, ReactElement, useEffect, useState } from 'react';
+import { FC, ReactElement, useState } from 'react';
+import { useQuery } from 'react-query';
 import Table from '@/component/table';
 import Sorter from '@/component/interaction/sorter';
-import { useBooksProviders } from '@/hooks';
+import { Book } from '@/models';
+import { getBooks } from '@/requests/books';
 
 type Data = {
   href: string;
@@ -16,11 +18,16 @@ type Data = {
 const BooksPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
   const [typeSort, setTypeSort] = useState('name');
+  const {
+    data: books,
+    isLoading,
+    isError,
+  } = useQuery<Book[]>({
+    queryKey: ['books'],
+    queryFn: () => getBooks(),
+  });
 
-  const { useListBooks } = useBooksProviders();
-  const { books, load } = useListBooks();
-
-  useEffect(() => load, []);
+  if (isLoading || isError || !books) return <span>Loading...</span>;
 
   const filteredBooks = books.filter(
     (book) =>

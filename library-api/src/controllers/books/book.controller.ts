@@ -1,5 +1,13 @@
-import { Controller, Get, Param, Post, Delete, Body, Patch } from '@nestjs/common';
-import { ApiTags } from "@nestjs/swagger";
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Delete,
+  Body,
+  Patch,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
   BookPresenter,
   PlainBookPresenter,
@@ -60,11 +68,10 @@ export class BookController {
   // ): Promise<BookPresenter> {
   //   const book = await this.bookUseCases.getById(id);
   //   //traiter les cas de renseignementnou non des differents champs
-    
+
   //     return BookPresenter.from(updatedBook);
   //   }
   // }
-
 
   @Delete('/:id')
   public async deleteBook(@Param('id') id: BookId): Promise<BookPresenter> {
@@ -75,4 +82,3 @@ export class BookController {
     return BookPresenter.from(book);
   }
 }
-

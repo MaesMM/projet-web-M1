@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { nanoid } from 'nanoid';
-import ListItem from '../listItem';
-import Button from '../interaction/button';
-import InputList from '../interaction/input/List';
+import ListItem from '../../listItem';
+import Button from '../../interaction/button';
+import InputList from '../../interaction/input/List';
 
 type Props = {
   data: {
@@ -32,7 +32,9 @@ export default function FormUpdate({
             <div className="px-4 py-2 bg-[#FFFFFF] rounded-full w-64">
               <select className="rounded-full w-full" name={obj.name}>
                 {obj.options?.map((option) => (
-                  <option value={option.value}>{option.label}</option>
+                  <option key={nanoid()} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -54,7 +56,7 @@ export default function FormUpdate({
             />
           )}
           {obj.type === 'listInput' && obj.defaultValues && (
-            <InputList data={obj.defaultValues} />
+            <InputList name={obj.name} data={obj.defaultValues} />
           )}
         </ListItem>
       ))}
@@ -64,7 +66,7 @@ export default function FormUpdate({
         <Button
           type="submit"
           className="bg-emerald-500 hover:bg-emerald-600 text-sm"
-          text="Confirmer"
+          text="Modifier"
         />
       </div>
     </form>

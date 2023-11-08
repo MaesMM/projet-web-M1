@@ -27,7 +27,7 @@ const Table = ({ data, addButton }: Props): React.ReactElement => {
       <div className="flex flex-col gap-4">
         {data.map((row) => (
           <Row
-            onClick={(): void => router.push(`/books/${row.href}`)}
+            onClick={(): void => router.push(`${path}/${row.href}`)}
             data={row.data}
             key={nanoid()}
           />

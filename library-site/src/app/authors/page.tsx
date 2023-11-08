@@ -4,35 +4,30 @@
 'use client';
 
 import { FC, ReactElement, useState } from 'react';
+import { useQuery } from 'react-query';
 import Table from '@/component/table';
 import Sorter from '@/component/interaction/sorter';
+import { Author } from '@/models';
+import { getAuthors } from '@/requests/authors';
 
 type Data = {
   href: string;
   data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
 };
 
-const authors = [
-  {
-    id: '1',
-    firstName: 'Antone',
-    lastName: 'Monteil',
-  },
-  {
-    id: '2',
-    firstName: 'Jean',
-    lastName: 'Dupont',
-  },
-  {
-    id: '3',
-    firstName: 'Pierre',
-    lastName: 'Dupont',
-  },
-];
-
 const AuthorsPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
-  const [typeSort, setTypeSort] = useState('firstname');
+  const [typeSort, setTypeSort] = useState('firstName');
+  const {
+    data: authors,
+    isLoading,
+    isError,
+  } = useQuery<Author[]>({
+    queryKey: ['authors'],
+    queryFn: () => getAuthors(),
+  });
+
+  if (isLoading || isError || !authors) return <span>Loading...</span>;
 
   const filteredAuthors = authors.filter(
     (author) =>
@@ -61,14 +56,30 @@ const AuthorsPage: FC = (): ReactElement => {
   return (
     <div className="flex flex-col gap-8">
       <Sorter
-        options={[
+        orderByOptions={[
           { label: 'Prénom', value: 'firstName' },
           { label: 'Nom', value: 'lastName' },
         ]}
         setInputValue={setInputValue}
-        setTypeSort={setTypeSort}
+        setTypeOrder={setTypeSort}
       />
-      <Table data={data as Data[]} addButton />
+      <Table
+        data={data as Data[]}
+        modalTitle="Ajouter un auteur"
+        onSubmitModal={(): void => console.log('hello')}
+        dataModalForm={[
+          {
+            label: 'Prénom',
+            name: 'firstName',
+            type: 'text',
+          },
+          {
+            label: 'Nom',
+            name: 'lastName',
+            type: 'text',
+          },
+        ]}
+      />
     </div>
   );
 };

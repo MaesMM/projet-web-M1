@@ -99,7 +99,7 @@ const UsersPage: FC = (): ReactElement => {
         setInputValue={setInputValue}
         setTypeSort={setTypeSort}
       />
-      <Table data={data as Data[]} addButton />
+      <Table data={data as Data[]} modalTitle="Créer un utilisateur" />
     </div>
   );
 };

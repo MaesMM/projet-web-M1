@@ -2,10 +2,10 @@ import {
   Controller,
   Get,
   Param,
-  Post,
+  //   Post,
   Delete,
-  Body,
-  Patch,
+  //   Body,
+  //   Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -14,9 +14,9 @@ import {
 } from 'library-api/src/controllers/books/book.presenter';
 import { BookId } from 'library-api/src/entities';
 import { BookUseCases } from 'library-api/src/useCases';
-import { CreateBookDto } from './create-book.dto';
-import { CreateBookRepositoryInput } from 'library-api/src/repositories/books/book.repository.type';
-import { CreateBookUseCasesInput } from 'library-api/src/useCases/books/book.useCases.type';
+// import { CreateBookDto } from './create-book.dto';
+// import { CreateBookRepositoryInput } from 'library-api/src/repositories/books/book.repository.type';
+// import { CreateBookUseCasesInput } from 'library-api/src/useCases/books/book.useCases.type';
 
 @ApiTags('Books')
 @Controller('books')
@@ -37,7 +37,7 @@ export class BookController {
     return BookPresenter.from(book);
   }
 
-  //BEGIN REQUEST CREATE
+  // BEGIN REQUEST CREATE
   // @Post('/create')
   // public async createBook(@Body() bodyContent : CreateBookDto ) : Promise<void>{   // ou Promise<CreateBookUseCasesInput> ??
   //   //get author id

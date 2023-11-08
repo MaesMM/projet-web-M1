@@ -56,14 +56,30 @@ const AuthorsPage: FC = (): ReactElement => {
   return (
     <div className="flex flex-col gap-8">
       <Sorter
-        options={[
+        orderByOptions={[
           { label: 'Prénom', value: 'firstName' },
           { label: 'Nom', value: 'lastName' },
         ]}
         setInputValue={setInputValue}
-        setTypeSort={setTypeSort}
+        setTypeOrder={setTypeSort}
       />
-      <Table data={data as Data[]} addButton />
+      <Table
+        data={data as Data[]}
+        modalTitle="Ajouter un auteur"
+        onSubmitModal={(): void => console.log('hello')}
+        dataModalForm={[
+          {
+            label: 'Prénom',
+            name: 'firstName',
+            type: 'text',
+          },
+          {
+            label: 'Nom',
+            name: 'lastName',
+            type: 'text',
+          },
+        ]}
+      />
     </div>
   );
 };

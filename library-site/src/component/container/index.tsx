@@ -9,7 +9,7 @@ type Props = {
 const Container = ({ children, className }: Props): React.ReactElement => (
   <div
     className={clsx(
-      'flex w-full rounded-xl flex justify-between relative bg-white-500 px-4 py-4 shadow',
+      'flex w-full rounded-xl flex relative bg-white-500 px-4 py-4 shadow',
       className,
     )}
   >

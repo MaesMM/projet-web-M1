@@ -24,7 +24,7 @@ const Button = ({
       }
     }}
     className={clsx(
-      'px-4 py-3 rounded-full hover:bg-gray-200 hover:transition-all duration-250 flex text-gray-800 items-center gap-3',
+      'px-4 py-3 rounded-xl hover:bg-gray-200 hover:transition-all duration-250 flex text-gray-800 items-center gap-3',
       className,
     )}
   >

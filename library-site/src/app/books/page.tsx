@@ -7,8 +7,9 @@ import { FC, ReactElement, useState } from 'react';
 import { useQuery } from 'react-query';
 import Table from '@/component/table';
 import Sorter from '@/component/interaction/sorter';
-import { Book } from '@/models';
+import { Author, Book } from '@/models';
 import { getBooks } from '@/requests/books';
+import { getAuthors } from '@/requests/authors';
 
 type Data = {
   href: string;
@@ -17,7 +18,8 @@ type Data = {
 
 const BooksPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
-  const [typeSort, setTypeSort] = useState('name');
+  const [typeFilter, setTypeFilter] = useState('all');
+
   const {
     data: books,
     isLoading,
@@ -27,34 +29,52 @@ const BooksPage: FC = (): ReactElement => {
     queryFn: () => getBooks(),
   });
 
-  if (isLoading || isError || !books) return <span>Loading...</span>;
-
-  const filteredBooks = books.filter(
-    (book) =>
-      book.author.firstName.toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.author.lastName.toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.genres.join(', ').toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.writtenOn.toString().includes(inputValue.toLowerCase()),
-  );
-
-  const orderedBooks = [...filteredBooks].sort((a, b) => {
-    if (typeSort === 'name') {
-      return a.name.localeCompare(b.name);
-    }
-    if (typeSort === 'date') {
-      const dataA = String(a.writtenOn);
-      const dataB = String(b.writtenOn);
-      return dataA.localeCompare(dataB);
-    }
-    return 0;
+  const {
+    data: authors,
+    isLoading: isAuthorsLoading,
+    isError: isAuthorsError,
+  } = useQuery<Author[]>({
+    queryKey: ['authors'],
+    queryFn: () => getAuthors(),
   });
 
-  const data = orderedBooks.map((book) => ({
+  if (
+    isLoading ||
+    isError ||
+    !books ||
+    isAuthorsError ||
+    isAuthorsLoading ||
+    !authors
+  ) {
+    return <span>Loading...</span>;
+  }
+
+  const filteredBooks = books.filter((book) => {
+    const lowerCaseInput = inputValue.toLowerCase();
+    const isMatchingAuthor =
+      book.author.firstName.toLowerCase().includes(lowerCaseInput) ||
+      book.author.lastName.toLowerCase().includes(lowerCaseInput);
+    const isMatchingName = book.name.toLowerCase().includes(lowerCaseInput);
+
+    const isMatchingDate = book.writtenOn.toString().includes(lowerCaseInput);
+
+    if (typeFilter !== 'all') {
+      return (
+        (isMatchingAuthor || isMatchingName || isMatchingDate) &&
+        book.genres.some(
+          (genre) => genre.toLowerCase() === typeFilter.toLowerCase(),
+        )
+      );
+    }
+
+    return isMatchingAuthor || isMatchingName || isMatchingDate;
+  });
+
+  const data = filteredBooks.map((book) => ({
     href: book.id,
     data: [
       { label: 'Titre', value: book.name, size: 'lg' },
-      { label: 'Date de sortie', value: String(book.writtenOn), size: 'md' },
+      { label: 'Date', value: String(book.writtenOn), size: 'md' },
       { label: 'Genres', value: book.genres.join(', '), size: 'lg' },
       {
         label: 'Auteur',
@@ -67,14 +87,44 @@ const BooksPage: FC = (): ReactElement => {
   return (
     <div className="flex flex-col gap-8">
       <Sorter
-        options={[
-          { label: 'Name', value: 'name' },
-          { label: 'Date', value: 'date' },
-        ]}
         setInputValue={setInputValue}
-        setTypeSort={setTypeSort}
+        filterByOptions={[
+          { label: 'Tous', value: 'all' },
+          { label: 'Science fiction', value: 'Science Fiction' },
+        ]}
+        setTypeFilter={setTypeFilter}
       />
-      <Table data={data as Data[]} addButton />
+      <Table
+        modalTitle="Créer un livre"
+        onSubmitModal={(e): void => console.log(e)}
+        dataModalForm={[
+          {
+            label: 'Title',
+            name: 'name',
+            type: 'text',
+          },
+          {
+            label: 'Author',
+            name: 'author',
+            type: 'select',
+            options: authors.map((author) => ({
+              value: author.id,
+              label: `${author.firstName} ${author.lastName}`,
+            })),
+          },
+          {
+            label: 'Date',
+            name: 'date',
+            type: 'number',
+          },
+          {
+            label: 'Genre',
+            name: 'genre',
+            type: 'listInput',
+          },
+        ]}
+        data={data as Data[]}
+      />
     </div>
   );
 };

@@ -1,35 +1,60 @@
 'use client';
 
-// import { useParams } from 'next/navigation';
 import { FC, FormEvent, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useQuery } from 'react-query';
 import Container from '@/component/container';
 import ListItem from '@/component/listItem';
 import Edit from '../../../../public/Edit.svg';
 import Delete from '../../../../public/Delete.svg';
 import Button from '@/component/interaction/button';
+
 import InputList from '@/component/interaction/input/List';
 
-const book = {
-  id: '1',
-  name: 'Hello',
-  writtenOn: 2025,
-  genres: ['Science fiction', 'action', 'amour'],
+type Book = {
+  id: string;
+  name: string;
+  writtenOn: number;
+  genres: {
+    id: string;
+    name: string;
+  }[];
   author: {
-    id: '1',
-    firstName: 'Antoine',
-    lastName: 'Monteil',
-  },
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
 };
+
+const handleSubmitForm = (e: FormEvent<HTMLFormElement>): void => {
+  e.preventDefault();
+  // console.log(e);
+};
+
+async function fetchBook(id: string): Promise<Book> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/books/${id}`,
+  );
+  return response.json();
+}
 
 const BooksDetailsPage: FC = () => {
   const [isModifying, setIsModifying] = useState(false);
 
-  //   const { id } = useParams();
+  const { id } = useParams();
+  const {
+    data: book,
+    isLoading,
+    isError,
+  } = useQuery<Book>({
+    queryKey: ['book', id as string],
+    queryFn: () => fetchBook(id as string),
+    enabled: !!id,
+  });
 
-  const handleSubmitForm = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    console.log(e);
-  };
+  if (isLoading || isError || !book) return <span>Loading...</span>;
+
+  console.log(book.genres.map((obj) => obj.name));
 
   return (
     <Container className="flex flex-col gap-4">
@@ -39,11 +64,11 @@ const BooksDetailsPage: FC = () => {
           <div className="flex">
             <Button
               onClick={(): void => setIsModifying(!isModifying)}
-              icon={Edit}
+              Icon={<Edit />}
               className="text-white-500 hover:text-white-600"
             />
             <Button
-              icon={Delete}
+              Icon={<Delete />}
               className="hover:bg-red-500 text-white-500 hover:text-white-600"
             />
           </div>
@@ -81,7 +106,7 @@ const BooksDetailsPage: FC = () => {
                 type="number"
               />
             </ListItem>
-            <InputList data={book.genres} />
+            <InputList data={book.genres.map((obj) => obj.name)} />
 
             <div className="flex gap-4 justify-end">
               <Button
@@ -108,7 +133,7 @@ const BooksDetailsPage: FC = () => {
               <span>{book.writtenOn as unknown as string}</span>
             </ListItem>
             <ListItem title="Genres">
-              <span>{book.genres.join(', ')}</span>
+              <span>{book.genres.map((obj) => obj.name).join(', ')}</span>
             </ListItem>
           </div>
         )}

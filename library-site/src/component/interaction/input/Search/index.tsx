@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import { clsx } from 'clsx';
 import Search from '../../../../../public/Search.svg';
 
@@ -29,13 +28,8 @@ const SearchBar = ({
       placeholder={placeholder}
       onChange={(e): void => onChange && onChange(e.target.value)}
     />
-    <Image
-      className="absolute right-4 top-2"
-      src={Search.src}
-      alt="Pen"
-      height={Search.height}
-      width={Search.width}
-    />
+
+    <Search className="absolute right-4 top-2" />
   </div>
 );
 

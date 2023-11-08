@@ -1,23 +1,29 @@
 import React from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { nanoid } from 'nanoid';
 import Container from '../container';
 import Row from '../row';
+import Add from '../../../public/Plus.svg';
 
-type RowProps = {
-  href: string;
-  data: { label: string; value: string }[];
-};
+// type RowProps = {
+//   href: string;
+//   data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
+// };
 
 type Props = {
-  data: RowProps[];
+  data: {
+    href: string;
+    data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
+  }[];
+  addButton?: boolean;
 };
 
-const Table = ({ data }: Props): React.ReactElement => {
+const Table = ({ data, addButton }: Props): React.ReactElement => {
   const router = useRouter();
+  const path = usePathname();
   return (
     <Container className="flex flex-col gap-4 pb-8">
-      <span className="text-sm">{`${data.length} livre(s) trouvé(s)`}</span>
+      <span className="text-sm">{`${data.length} élément(s) trouvé(s)`}</span>
       <div className="flex flex-col gap-4">
         {data.map((row) => (
           <Row
@@ -26,9 +32,23 @@ const Table = ({ data }: Props): React.ReactElement => {
             key={nanoid()}
           />
         ))}
+        {addButton && (
+          <button
+            type="button"
+            onClick={(): void => router.push(`${path}/new`)}
+            className="w-full h-24 rounded-xl flex justify-center items-center px-4 py-2 border hover:bg-gray-200 border-solid border-gray-200"
+            aria-label="create new book"
+          >
+            <Add />
+          </button>
+        )}
       </div>
     </Container>
   );
+};
+
+Table.defaultProps = {
+  addButton: false,
 };
 
 export default Table;

@@ -28,8 +28,8 @@ export class AuthorRepository extends Repository<Author> {
     inputAuthor: CreateAuthorRepositoryInput,
   ): Promise<RepositoryOutput<Author>> {
     const author = new Author();
-    author.firstName = inputAuthor.name;
-    author.lastName = inputAuthor.name;
+    author.firstName = inputAuthor.firstName;
+    author.lastName = inputAuthor.lastName;
     author.id = uuidv4();
     await author.save();
 

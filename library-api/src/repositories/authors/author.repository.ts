@@ -1,17 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { Author } from 'library-api/src/entities';
-import { PlainAuthorModel } from 'library-api/src/models';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { NotFoundError } from 'library-api/src/common/errors';
+import { Author, AuthorId } from 'library-api/src/entities';
 import { DataSource, Repository } from 'typeorm';
-// import { 
-//   PlainAuthorRepositoryOutput,
-//   AuthorRepositoryOutput,
-// } from 'library-api/src/repositories/authors/author.repository.type';
+import { v4 as uuidv4 } from 'uuid';
+import { CreateAuthorRepositoryInput } from 'library-api/src/repositories/authors/author.repository.type';
 
-// import {
-//   adaptAuthorEntityToAuthorModel,
-//   adaptAuthorEntityToPlainAuthorModel,
-// } from 'library-api/src/repositories/books/book.utils';
-// import { DataSource, Repository } from 'typeorm';
+// Interface générique pour les types de sortie du repository
+interface RepositoryOutput<T> {
+  data: T;
+  success: boolean;
+  message?: string;
+}
 
 @Injectable()
 export class AuthorRepository extends Repository<Author> {
@@ -19,15 +18,45 @@ export class AuthorRepository extends Repository<Author> {
     super(Author, dataSource.createEntityManager());
   }
 
-//   /**
-//    * get  all authors
-//    * @returns Array of plain authors
-//    */
+  /**
+   * Create a new author
+   * @param inputAuthor
+   * @throws 500: author was not created
+   * @returns
+   */
+  public async createAuthor(
+    inputAuthor: CreateAuthorRepositoryInput,
+  ): Promise<RepositoryOutput<Author>> {
+    const author = new Author();
+    author.firstName = inputAuthor.name;
+    author.lastName = inputAuthor.name;
+    author.id = uuidv4();
+    await author.save();
 
-//   public async getAllPlain(): Promise<PlainAuthorModel[]>{
-//     const authors = await this.find({
-//       relations: { books: true },
-//     });
-//     return authors.map(adaptAuthorEntityToPlainAuthorModel);
-//   }
+    return {
+      data: author,
+      success: true,
+      message: 'Author created successfully',
+    };
+  }
+
+  public async deleteAuthor(id: Author): Promise<RepositoryOutput<Author>> {
+    const author = await this.getId(id);
+    // const author = await this.findOne(id);
+
+    if (!author) {
+      throw new NotFoundError(`Author - '${id}'`);
+    }
+
+    try {
+      await this.delete(author.id);
+      return {
+        data: author,
+        success: true,
+        message: 'Author deleted successfully',
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(`Author - '${id}'`);
+    }
+  }
 }

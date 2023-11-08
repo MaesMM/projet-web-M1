@@ -9,7 +9,8 @@ import Edit from '../../../../public/Edit.svg';
 import Delete from '../../../../public/Delete.svg';
 import Button from '@/component/interaction/button';
 
-import InputList from '@/component/interaction/input/List';
+// import InputList from '@/component/interaction/input/List';
+import FormUpdate from '@/component/formUpdate';
 
 type Book = {
   id: string;
@@ -75,65 +76,48 @@ const BooksDetailsPage: FC = () => {
         </div>
 
         {isModifying ? (
-          <form
-            onSubmit={(e): void => handleSubmitForm(e)}
-            className="flex flex-col gap-4"
-          >
-            <ListItem title="Titre">
-              <input
-                name="name"
-                className="px-4 py-2 rounded-full w-64"
-                defaultValue={book.name}
-                type="text"
-              />
-            </ListItem>
-            <ListItem title="Auteur">
-              <div className="px-4 py-2 bg-[#FFFFFF] rounded-full w-64">
-                <select
-                  defaultValue={book.author.id}
-                  className="rounded-full w-full"
-                  name="author"
-                >
-                  <option value="1">Antoine Monteil</option>
-                </select>
-              </div>
-            </ListItem>
-            <ListItem title="Date">
-              <input
-                name="date"
-                className="px-4 py-2 w-xl rounded-full w-64"
-                defaultValue={book.writtenOn}
-                type="number"
-              />
-            </ListItem>
-            <InputList data={book.genres.map((obj) => obj.name)} />
-
-            <div className="flex gap-4 justify-end">
-              <Button
-                onClick={(): void => setIsModifying(false)}
-                className="text-sm"
-                text="Annuler"
-              />
-              <Button
-                type="submit"
-                className="bg-emerald-500 hover:bg-emerald-600 text-sm"
-                text="Confirmer"
-              />
-            </div>
-          </form>
+          <FormUpdate
+            onSubmit={handleSubmitForm}
+            onCancel={(): void => setIsModifying(false)}
+            data={[
+              {
+                label: 'Titre',
+                name: 'name',
+                type: 'text',
+                defaultValue: book.name,
+              },
+              {
+                label: 'Auteur',
+                name: 'author',
+                type: 'select',
+                defaultValue: book.author.id,
+                options: [{ value: '1', label: 'Antoine Monteil' }],
+              },
+              {
+                label: 'Date',
+                name: 'date',
+                type: 'number',
+                defaultValue: book.writtenOn,
+              },
+              {
+                label: 'Genres',
+                name: 'genres',
+                type: 'listInput',
+                defaultValues: book.genres.map((obj) => obj.name),
+              },
+            ]}
+          />
         ) : (
           <div className="flex flex-col gap-4">
-            <ListItem title="Titre">
-              <span>{book.name}</span>
-            </ListItem>
+            <ListItem title="Titre">{book.name}</ListItem>
             <ListItem title="Auteur">
-              <span>{`${book.author.firstName} ${book.author.lastName}`}</span>
+              {`${book.author.firstName} ${book.author.lastName}`}
             </ListItem>
             <ListItem title="Date">
-              <span>{book.writtenOn as unknown as string}</span>
+              {book.writtenOn as unknown as string}
             </ListItem>
             <ListItem title="Genres">
-              <span>{book.genres.map((obj) => obj.name).join(', ')}</span>
+              {book.genres.map((obj) => obj.name).join(', ')}
             </ListItem>
           </div>
         )}

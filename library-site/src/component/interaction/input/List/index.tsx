@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Image from 'next/image';
 import Delete from '../../../../../public/Close remove.svg';
 
 type Props = {
@@ -29,23 +28,12 @@ const InputList = ({ data }: Props): React.ReactElement => {
           className="px-4 py-2 h-fit rounded-full"
           type="text"
         />
-        {/* <Button
-          onClick={(): void => {
-            setList([...list, inputValue]);
-          }}
-          text="Add"
-          className="bg-white-600 py-2 text-sm"
-        /> */}
       </div>
       <div className="flex gap-2 flex-wrap">
         {list.map((genre) => (
           <div className="flex gap-1 bg-gray-200 items-center rounded-full px-3 py-1">
             <span className="text-sm">{genre}</span>
-            <Image
-              src={Delete.src}
-              width={Delete.width}
-              height={Delete.height}
-              alt="Delete"
+            <Delete
               onClick={(): void => {
                 setList(list.filter((item) => item !== genre));
               }}

@@ -1,9 +1,16 @@
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
+
 'use client';
 
 import { FC, ReactElement, useState } from 'react';
 import Table from '@/component/table';
 import Sorter from '@/component/interaction/sorter';
 
+type Data = {
+  href: string;
+  data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
+};
 const users = [
   {
     id: '1',
@@ -74,8 +81,12 @@ const UsersPage: FC = (): ReactElement => {
   const data = sortedUsers.map((user) => ({
     href: user.id,
     data: [
-      { label: 'Pseudonyme', value: user.username },
-      { label: 'Nombre de livre', value: String(user.books.length) },
+      { label: 'Pseudonyme', value: user.username, size: 'md' },
+      {
+        label: 'Nombre de livre',
+        value: String(user.books.length),
+        size: 'md',
+      },
     ],
   }));
   return (
@@ -88,7 +99,7 @@ const UsersPage: FC = (): ReactElement => {
         setInputValue={setInputValue}
         setTypeSort={setTypeSort}
       />
-      <Table data={data} />
+      <Table data={data as Data[]} addButton />
     </div>
   );
 };

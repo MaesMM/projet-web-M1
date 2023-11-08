@@ -1,60 +1,32 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable operator-linebreak */
+
 'use client';
 
-import { FC, ReactElement, useState } from 'react';
-// import { useBooksProviders } from '@/hooks';
+import { FC, ReactElement, useEffect, useState } from 'react';
 import Table from '@/component/table';
 import Sorter from '@/component/interaction/sorter';
+import { useBooksProviders } from '@/hooks';
 
-const books = [
-  {
-    id: '1',
-    name: 'Hello',
-    writtenOn: 2025,
-    genres: ['Science fiction, action, amour'],
-    author: {
-      id: '1',
-      firstName: 'Antoine',
-      lastName: 'Monteil',
-    },
-  },
-  {
-    id: '2',
-    name: 'allo',
-    writtenOn: 2024,
-    genres: ['Science fiction'],
-    author: {
-      id: '1',
-      firstName: 'Antoine',
-      lastName: 'Monteil',
-    },
-  },
-  {
-    id: '2',
-    name: 'pom',
-    writtenOn: 1960,
-    genres: ['Science fiction'],
-    author: {
-      id: '1',
-      firstName: 'Antoine',
-      lastName: 'Monteil',
-    },
-  },
-];
-
-//   const { useListBooks } = useBooksProviders();
-//   const { books, load } = useListBooks();
-
-//   useEffect(() => load, []);
+type Data = {
+  href: string;
+  data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
+};
 
 const BooksPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
   const [typeSort, setTypeSort] = useState('name');
 
+  const { useListBooks } = useBooksProviders();
+  const { books, load } = useListBooks();
+
+  useEffect(() => load, []);
+
   const filteredBooks = books.filter(
     (book) =>
-      book.name.toLowerCase().includes(inputValue.toLowerCase()) ||
       book.author.firstName.toLowerCase().includes(inputValue.toLowerCase()) ||
       book.author.lastName.toLowerCase().includes(inputValue.toLowerCase()) ||
+      book.name.toLowerCase().includes(inputValue.toLowerCase()) ||
       book.genres.join(', ').toLowerCase().includes(inputValue.toLowerCase()) ||
       book.writtenOn.toString().includes(inputValue.toLowerCase()),
   );
@@ -74,12 +46,13 @@ const BooksPage: FC = (): ReactElement => {
   const data = orderedBooks.map((book) => ({
     href: book.id,
     data: [
-      { label: 'Name', value: book.name },
-      { label: 'Written On', value: String(book.writtenOn) },
-      { label: 'Genres', value: book.genres.join(', ') },
+      { label: 'Titre', value: book.name, size: 'lg' },
+      { label: 'Date de sortie', value: String(book.writtenOn), size: 'md' },
+      { label: 'Genres', value: book.genres.join(', '), size: 'lg' },
       {
-        label: 'Author',
+        label: 'Auteur',
         value: `${book.author.firstName} ${book.author.lastName}`,
+        size: 'md',
       },
     ],
   }));
@@ -94,7 +67,7 @@ const BooksPage: FC = (): ReactElement => {
         setInputValue={setInputValue}
         setTypeSort={setTypeSort}
       />
-      <Table data={data} />
+      <Table data={data as Data[]} addButton />
     </div>
   );
 };

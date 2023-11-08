@@ -2,10 +2,10 @@ import {
   Controller,
   Get,
   Param,
-  Post,
+  //   Post,
   Delete,
-  Body,
-  Patch,
+  //   Body,
+  //   Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {

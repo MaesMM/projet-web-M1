@@ -1,6 +1,5 @@
 import React, { ReactElement } from 'react';
 import Container from '../container';
-import FormCreate from '../form/formCreate';
 import Close from '../../../public/Close remove.svg';
 
 type Props = {

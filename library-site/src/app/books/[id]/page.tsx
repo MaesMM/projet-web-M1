@@ -122,7 +122,7 @@ const BooksDetailsPage: FC = () => {
                   label: 'Genres',
                   name: 'genres',
                   type: 'listInput',
-                  defaultValues: book.genres.map((obj) => obj.name),
+                  defaultValues: book.genres.map((obj) => obj),
                 },
               ]}
             />
@@ -136,7 +136,7 @@ const BooksDetailsPage: FC = () => {
                 {book.writtenOn as unknown as string}
               </ListItem>
               <ListItem title="Genres">
-                {book.genres.map((obj) => obj.name).join(', ')}
+                {book.genres.map((obj) => obj).join(', ')}
               </ListItem>
             </div>
           )}

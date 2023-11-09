@@ -1,49 +1,104 @@
+/* eslint-disable operator-linebreak */
+
 'use client';
 
-import { useParams } from 'next/navigation';
-import { FC } from 'react';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useParams, useRouter } from 'next/navigation';
+import { FC, useState } from 'react';
 import Container from '@/component/container';
 import ListItem from '@/component/listItem';
-import Button from '@/component/interaction/button';
-import Edit from '../../../../public/Edit.svg';
-import Delete from '../../../../public/Delete.svg';
+import { Author, Book } from '@/models';
+import { deleteAuthorByID, getAuthorByID } from '@/requests/authors';
+import { getBooks } from '@/requests/books';
+import Modal from '@/component/modal';
+import BooksTable from '@/component/table/booksTable';
+import FormUpdateAuthors from '@/component/form/formUpdate/formUpdateAuthors';
+import Confirmation from '@/component/interaction/confirmation';
 
-const author = {
-  id: '1',
-  firstName: 'Antone',
-  lastName: 'Monteil',
+type Data = {
+  href: string;
+  data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
 };
 
 const AuthorDetailsPage: FC = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isModifying, setIsModifying] = useState(false);
+  const [isModalDisplayed, setIsModalDisplayed] = useState(false);
   const { id } = useParams();
-  console.log(id);
+
+  const { data: books } = useQuery<Book[]>({
+    queryKey: ['books'],
+    queryFn: () => getBooks(),
+  });
+
+  const { data: author } = useQuery<Author>({
+    queryKey: ['author', id as string],
+    queryFn: () => getAuthorByID(id as string),
+    enabled: !!id,
+  });
+
+  const authorsMutation = useMutation({
+    mutationFn: () => deleteAuthorByID(id as string),
+    onSuccess: () => {
+      router.push('/authors');
+      return queryClient.invalidateQueries(['authors']);
+    },
+  });
+
+  if (!author || !books) {
+    return <span>Loading...</span>;
+  }
+
+  const data = books.map((book: Book) => ({
+    href: book.id,
+    data: [
+      { label: 'Titre', value: book.name, size: 'lg' },
+      { label: 'Date', value: String(book.writtenOn), size: 'md' },
+      { label: 'Genres', value: book.genres.join(', '), size: 'lg' },
+      {
+        label: 'Auteur',
+        value: `${book.author.firstName} ${book.author.lastName}`,
+        size: 'md',
+      },
+    ],
+  }));
 
   return (
-    <Container className="flex flex-col gap-4">
-      <div className="flex justify-between items-center w-full">
-        <span className="text-xl font-medium">Information Generales</span>
-        <div className="flex">
-          <Button icon={Edit} className="text-white-500 hover:text-white-600" />
-          <Button
-            icon={Delete}
-            className="hover:bg-red-500 text-white-500 hover:text-white-600"
+    <div className="flex flex-col gap-8">
+      <Container
+        className="flex flex-col gap-4"
+        title="Informations générales"
+        onClickDelete={(): void => setIsModalDisplayed(true)}
+        onClickEdit={(): void => setIsModifying(!isModifying)}
+      >
+        {isModifying ? (
+          <FormUpdateAuthors author={author} setIsModifying={setIsModifying} />
+        ) : (
+          <div className="flex flex-col gap-4">
+            <ListItem title="Prénom">{author.firstName}</ListItem>
+            <ListItem title="Nom">{author.lastName}</ListItem>
+          </div>
+        )}
+      </Container>
+      <BooksTable data={data as Data[]} />
+      {isModalDisplayed && (
+        <Modal
+          setModalVisible={setIsModalDisplayed}
+          title="Voulez vous supprimer cet auteur ?"
+        >
+          <Confirmation
+            onCancel={(): void => {
+              setIsModalDisplayed(false);
+            }}
+            onConfirm={(): void => {
+              setIsModalDisplayed(false);
+              authorsMutation.mutate();
+            }}
           />
-        </div>
-      </div>
-      <ListItem title="Prénom">
-        <span>{author.firstName}</span>
-      </ListItem>
-      <ListItem title="Nom">
-        <span>{author.lastName}</span>
-      </ListItem>
-      <div className="flex gap-4 justify-end">
-        <Button className="text-sm" text="Annuler" />
-        <Button
-          className="bg-emerald-500 hover:bg-emerald-600 text-sm"
-          text="Confirmer"
-        />
-      </div>
-    </Container>
+        </Modal>
+      )}
+    </div>
   );
 };
 

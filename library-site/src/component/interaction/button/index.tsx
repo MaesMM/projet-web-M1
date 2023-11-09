@@ -1,9 +1,8 @@
 import React from 'react';
-import Image, { StaticImageData } from 'next/image';
 import clsx from 'clsx';
 
 type ButtonProps = {
-  icon?: StaticImageData;
+  Icon?: React.ReactNode;
   text?: string;
   onClick?: () => void;
   className?: string;
@@ -11,7 +10,7 @@ type ButtonProps = {
 };
 
 const Button = ({
-  icon,
+  Icon,
   text,
   onClick,
   className,
@@ -25,19 +24,18 @@ const Button = ({
       }
     }}
     className={clsx(
-      'px-4 py-3 rounded-full hover:bg-gray-200 hover:transition-all duration-250 flex text-gray-800 items-center gap-3',
+      'px-4 py-3 rounded-xl hover:bg-gray-200 hover:transition-all duration-250 flex text-gray-800 items-center gap-3',
       className,
     )}
   >
-    {icon && (
-      <Image src={icon.src} alt="Pen" height={icon.height} width={icon.width} />
-    )}
+    {/* <Icon /> */}
+    {Icon}
     {text && <span>{text}</span>}
   </button>
 );
 
 Button.defaultProps = {
-  icon: undefined,
+  Icon: undefined,
   className: undefined,
   onClick: (): void => {},
   text: undefined,

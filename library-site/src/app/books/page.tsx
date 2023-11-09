@@ -1,100 +1,79 @@
+/* eslint-disable implicit-arrow-linebreak */
+/* eslint-disable operator-linebreak */
+
 'use client';
 
 import { FC, ReactElement, useState } from 'react';
-// import { useBooksProviders } from '@/hooks';
-import Table from '@/component/table';
-import Sorter from '@/component/interaction/sorter';
+import { useQuery } from 'react-query';
+import { Book } from '@/models';
+import { getBooks } from '@/requests/books';
+import BooksTable from '@/component/table/booksTable';
+import BooksSorter from '@/component/interaction/sorter/booksSorter';
 
-const books = [
-  {
-    id: '1',
-    name: 'Hello',
-    writtenOn: 2025,
-    genres: ['Science fiction, action, amour'],
-    author: {
-      id: '1',
-      firstName: 'Antoine',
-      lastName: 'Monteil',
-    },
-  },
-  {
-    id: '2',
-    name: 'allo',
-    writtenOn: 2024,
-    genres: ['Science fiction'],
-    author: {
-      id: '1',
-      firstName: 'Antoine',
-      lastName: 'Monteil',
-    },
-  },
-  {
-    id: '2',
-    name: 'pom',
-    writtenOn: 1960,
-    genres: ['Science fiction'],
-    author: {
-      id: '1',
-      firstName: 'Antoine',
-      lastName: 'Monteil',
-    },
-  },
-];
-
-//   const { useListBooks } = useBooksProviders();
-//   const { books, load } = useListBooks();
-
-//   useEffect(() => load, []);
+type Data = {
+  href: string;
+  data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
+};
 
 const BooksPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
-  const [typeSort, setTypeSort] = useState('name');
+  const [typeFilter, setTypeFilter] = useState('all');
 
-  const filteredBooks = books.filter(
-    (book) =>
-      book.name.toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.author.firstName.toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.author.lastName.toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.genres.join(', ').toLowerCase().includes(inputValue.toLowerCase()) ||
-      book.writtenOn.toString().includes(inputValue.toLowerCase()),
-  );
-
-  const orderedBooks = [...filteredBooks].sort((a, b) => {
-    if (typeSort === 'name') {
-      return a.name.localeCompare(b.name);
-    }
-    if (typeSort === 'date') {
-      const dataA = String(a.writtenOn);
-      const dataB = String(b.writtenOn);
-      return dataA.localeCompare(dataB);
-    }
-    return 0;
+  const {
+    data: books,
+    isLoading,
+    isError,
+  } = useQuery<Book[]>({
+    queryKey: ['books'],
+    queryFn: () => getBooks(),
   });
 
-  const data = orderedBooks.map((book) => ({
+  if (isLoading || isError || !books) {
+    return <span>Loading...</span>;
+  }
+
+  const filteredBooks = books.filter((book: Book) => {
+    const lowerCaseInput = inputValue.toLowerCase();
+    const isMatchingAuthor =
+      book.author.firstName.toLowerCase().includes(lowerCaseInput) ||
+      book.author.lastName.toLowerCase().includes(lowerCaseInput);
+    const isMatchingName = book.name.toLowerCase().includes(lowerCaseInput);
+
+    const isMatchingDate = book.writtenOn.toString().includes(lowerCaseInput);
+
+    if (typeFilter !== 'all') {
+      return (
+        (isMatchingAuthor || isMatchingName || isMatchingDate) &&
+        book.genres.some(
+          (genre) => genre.toLowerCase() === typeFilter.toLowerCase(),
+        )
+      );
+    }
+
+    return isMatchingAuthor || isMatchingName || isMatchingDate;
+  });
+
+  const data = filteredBooks.map((book: Book) => ({
     href: book.id,
     data: [
-      { label: 'Name', value: book.name },
-      { label: 'Written On', value: String(book.writtenOn) },
-      { label: 'Genres', value: book.genres.join(', ') },
+      { label: 'Titre', value: book.name, size: 'lg' },
+      { label: 'Date', value: String(book.writtenOn), size: 'md' },
+      { label: 'Genres', value: book.genres.join(', '), size: 'lg' },
       {
-        label: 'Author',
+        label: 'Auteur',
         value: `${book.author.firstName} ${book.author.lastName}`,
+        size: 'md',
       },
     ],
   }));
 
   return (
     <div className="flex flex-col gap-8">
-      <Sorter
-        options={[
-          { label: 'Name', value: 'name' },
-          { label: 'Date', value: 'date' },
-        ]}
+      <BooksSorter
         setInputValue={setInputValue}
-        setTypeSort={setTypeSort}
+        setTypeFilter={setTypeFilter}
       />
-      <Table data={data} />
+      <BooksTable data={data as Data[]} />
     </div>
   );
 };

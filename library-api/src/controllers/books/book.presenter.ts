@@ -27,6 +27,17 @@ export class PlainBookPresenter {
       author: PlainAuthorPresenter.from(data.author),
     });
   }
+
+  public static toPlain(data: BookModel): PlainBookPresenter {
+    return new PlainBookPresenter({
+      id: data.id,
+      name: data.name,
+      writtenOn: data.writtenOn,
+      author: PlainAuthorPresenter.from(data.author),
+      genres: data.genres.map((genre) => genre.name),
+    });
+  }
+
 }
 
 export class BookPresenter {

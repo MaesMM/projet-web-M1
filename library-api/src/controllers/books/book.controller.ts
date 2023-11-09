@@ -18,21 +18,20 @@ export class BookController {
 
 
   @Get('/')
-  public async getAll(): Promise<PlainBookPresenter[]> {
+  public async getAll(): Promise<BookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
 
-    return books.map(PlainBookPresenter.from);
+    return books.map((book) => BookPresenter.from(book));
   }
 
-  @Get('/:id')
+ @Get('/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
-    
+
     return BookPresenter.from(book);
   }
 
  
-  //BEGIN REQUEST CREATE
   @Post('/create')
   public async createBook(@Body() bodyContent : CreateBookDto ) : Promise<BookPresenter>{   // ou Promise<BookPresenter> pour renvoyer un objet
     const author = await this.authorUseCases.getById(bodyContent.authorId);

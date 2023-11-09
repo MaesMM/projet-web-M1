@@ -25,7 +25,7 @@ export class BookUseCases {
    * Get all plain books
    * @returns Array of plain books
    */
-  public async getAllPlain(): Promise<PlainBookUseCasesOutput[]> {
+  public async getAllPlain(): Promise<BookUseCasesOutput[]> {
     return this.bookRepository.getAllPlain();
   }
 

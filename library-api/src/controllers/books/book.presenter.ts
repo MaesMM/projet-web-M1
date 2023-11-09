@@ -1,7 +1,7 @@
 import { PlainAuthorPresenter } from 'library-api/src/controllers/authors/author.presenter';
 import { GenrePresenter } from 'library-api/src/controllers/genres/genre.presenter';
 import { BookId } from 'library-api/src/entities';
-import { BookModel, PlainBookModel } from 'library-api/src/models';
+import { BookModel, PlainBookModel, SBookModel } from 'library-api/src/models';
 
 export class PlainBookPresenter {
   id: BookId;
@@ -51,6 +51,29 @@ export class BookPresenter {
       writtenOn: data.writtenOn,
       author: PlainAuthorPresenter.from(data.author),
       genres: data.genres.map(GenrePresenter.from),
+    });
+  }
+}
+
+export class SBookPresenter {
+  id: string;
+
+  name: string;
+
+  author: PlainAuthorPresenter;
+
+  writtenOn: Date;
+
+  private constructor(data: SBookPresenter) {
+    Object.assign(this, data);
+  }
+
+  public static from(data: SBookModel): SBookPresenter {
+    return new SBookPresenter({
+      id: data.id,
+      name: data.name,
+      writtenOn: data.writtenOn,
+      author: PlainAuthorPresenter.from(data.author),
     });
   }
 }

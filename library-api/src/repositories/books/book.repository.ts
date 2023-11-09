@@ -15,8 +15,6 @@ import { DataSource, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 // import { BadRequestError } from '@nestjs/common';
 
-
-
 @Injectable()
 export class BookRepository extends Repository<Book> {
   constructor(public readonly dataSource: DataSource) {
@@ -42,7 +40,10 @@ export class BookRepository extends Repository<Book> {
    * @throws 404: book with this ID was not found
    */
   public async getById(id: BookId): Promise<BookRepositoryOutput> {
-    const book = await this.findOne({ where: { id }, relations: { bookGenres: { genre: true }, author: true }, });
+    const book = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true }, author: true },
+    });
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);

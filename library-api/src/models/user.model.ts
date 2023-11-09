@@ -1,4 +1,4 @@
-import { UserBook, UserId } from '../entities';
+import { UserId } from '../entities';
 import { BookModel } from './book.model';
 
 export type PlainUserModel = {
@@ -14,5 +14,5 @@ export type UserModel = {
   firstName: string;
   lastName: string;
   favoriteBook: BookModel;
-  userBook: UserBook[];
+  userBook: string[];
 };

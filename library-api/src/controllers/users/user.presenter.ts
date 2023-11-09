@@ -1,6 +1,6 @@
 import { PlainUserModel, UserModel } from 'library-api/src/models';
-import { UserBook, UserId } from 'library-api/src/entities';
-import { SBookPresenter, PlainBookPresenter } from '../books/book.presenter';
+import { UserId } from 'library-api/src/entities';
+import { SBookPresenter } from '../books/book.presenter';
 
 export class PlainUserPresenter {
   id: UserId;
@@ -9,7 +9,7 @@ export class PlainUserPresenter {
 
   lastName: string;
 
-  favoriteBook: PlainBookPresenter;
+  favoriteBook: string[];
 
   userBook: string[];
 
@@ -22,7 +22,7 @@ export class PlainUserPresenter {
       id: data.id,
       firstName: data.firstName,
       lastName: data.lastName,
-      favoriteBook: PlainBookPresenter.from(data.favoriteBook),
+      favoriteBook: data.favoriteBook,
       userBook: data.userBook,
     });
   }
@@ -37,7 +37,7 @@ export class UserPresenter {
 
   favoriteBook: SBookPresenter;
 
-  userBook: UserBook[];
+  userBook: string[];
 
   private constructor(data: UserPresenter) {
     Object.assign(this, data);

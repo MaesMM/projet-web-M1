@@ -19,7 +19,7 @@ export class UserRepository extends Repository<User> {
 
   public async getAllPlain(): Promise<PlainUserRepositoryOutput[]> {
     const users = await this.find({
-      relations: { userBook: { book: true } },
+      relations: { userBook: { book: true }, favoriteBook: true },
     });
 
     return users.map(adaptUserEntityToPlainUserModel);

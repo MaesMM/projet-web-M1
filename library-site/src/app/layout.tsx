@@ -28,7 +28,10 @@ export default function RootLayout({
             </div>
             <div className="flex flex-[3] flex-col">
               <Header />
-              <div className="overflow-y-scroll -mt-12 pt-20 pb-8">
+              <div
+                style={{ scrollbarWidth: 'none' }}
+                className="overflow-y-scroll -mt-12 pt-20 pb-8"
+              >
                 {children}
               </div>
             </div>

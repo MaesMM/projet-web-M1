@@ -9,3 +9,19 @@ export type PlainBookModel = {
   writtenOn: number;
   genres: string[];
 };
+
+export type Book = {
+  id: string;
+  name: string;
+  writtenOn: number;
+  //   genres: {
+  //     id: string;
+  //     name: string;
+  //   }[];
+  genres: string[];
+  author: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+};

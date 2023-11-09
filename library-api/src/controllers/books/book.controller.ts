@@ -17,33 +17,42 @@ import { AuthorUseCases, BookUseCases } from 'library-api/src/useCases';
 import { CreateBookDto } from './create-book.dto';
 import { CreateBookRepositoryInput } from 'library-api/src/repositories/books/book.repository.type';
 import { NotFoundError } from 'rxjs';
-@ApiTags("Books")
-
+@ApiTags('Books')
 @Controller('books')
 export class BookController {
-
-  constructor(private readonly bookUseCases: BookUseCases, private readonly authorUseCases : AuthorUseCases) {}
+  constructor(
+    private readonly bookUseCases: BookUseCases,
+    private readonly authorUseCases: AuthorUseCases,
+  ) {}
 
 
   @Get('/')
   public async getAll(): Promise<BookPresenter[]> {
+  public async getAll(): Promise<BookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
 
+    return books.map((book) => BookPresenter.from(book));
     return books.map((book) => BookPresenter.from(book));
   }
 
  @Get('/:id')
+ @Get('/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
+
 
     return BookPresenter.from(book);
   }
 
  
   @Post('/create')
-  public async createBook(@Body() bodyContent : CreateBookDto ) : Promise<BookPresenter>{   // ou Promise<BookPresenter> pour renvoyer un objet
+  public async createBook(
+    @Body() bodyContent: CreateBookDto,
+  ): Promise<BookPresenter> {
+    // ou Promise<BookPresenter> pour renvoyer un objet
     const author = await this.authorUseCases.getById(bodyContent.authorId);
-    
+
+
     if (!author) {
       // Handle the case where the author with the given ID doesn't exist
       throw new NotFoundError(`Author - '${bodyContent.authorId}'`);
@@ -68,6 +77,7 @@ export class BookController {
   // ): Promise<BookPresenter> {
   //   const book = await this.bookUseCases.getById(id);
   //   //traiter les cas de renseignementnou non des differents champs
+
 
   //     return BookPresenter.from(updatedBook);
   //   }

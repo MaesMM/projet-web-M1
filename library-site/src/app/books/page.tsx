@@ -5,11 +5,10 @@
 
 import { FC, ReactElement, useState } from 'react';
 import { useQuery } from 'react-query';
-import Table from '@/component/table';
-import Sorter from '@/component/interaction/sorter';
-import { Author, Book } from '@/models';
+import { Book } from '@/models';
 import { getBooks } from '@/requests/books';
-import { getAuthors } from '@/requests/authors';
+import BooksTable from '@/component/table/booksTable';
+import BooksSorter from '@/component/interaction/sorter/booksSorter';
 
 type Data = {
   href: string;
@@ -29,27 +28,11 @@ const BooksPage: FC = (): ReactElement => {
     queryFn: () => getBooks(),
   });
 
-  const {
-    data: authors,
-    isLoading: isAuthorsLoading,
-    isError: isAuthorsError,
-  } = useQuery<Author[]>({
-    queryKey: ['authors'],
-    queryFn: () => getAuthors(),
-  });
-
-  if (
-    isLoading ||
-    isError ||
-    !books ||
-    isAuthorsError ||
-    isAuthorsLoading ||
-    !authors
-  ) {
+  if (isLoading || isError || !books) {
     return <span>Loading...</span>;
   }
 
-  const filteredBooks = books.filter((book) => {
+  const filteredBooks = books.filter((book: Book) => {
     const lowerCaseInput = inputValue.toLowerCase();
     const isMatchingAuthor =
       book.author.firstName.toLowerCase().includes(lowerCaseInput) ||
@@ -70,7 +53,7 @@ const BooksPage: FC = (): ReactElement => {
     return isMatchingAuthor || isMatchingName || isMatchingDate;
   });
 
-  const data = filteredBooks.map((book) => ({
+  const data = filteredBooks.map((book: Book) => ({
     href: book.id,
     data: [
       { label: 'Titre', value: book.name, size: 'lg' },
@@ -86,45 +69,11 @@ const BooksPage: FC = (): ReactElement => {
 
   return (
     <div className="flex flex-col gap-8">
-      <Sorter
+      <BooksSorter
         setInputValue={setInputValue}
-        filterByOptions={[
-          { label: 'Tous', value: 'all' },
-          { label: 'Science fiction', value: 'Science Fiction' },
-        ]}
         setTypeFilter={setTypeFilter}
       />
-      <Table
-        modalTitle="Créer un livre"
-        onSubmitModal={(e): void => console.log(e)}
-        dataModalForm={[
-          {
-            label: 'Title',
-            name: 'name',
-            type: 'text',
-          },
-          {
-            label: 'Author',
-            name: 'author',
-            type: 'select',
-            options: authors.map((author) => ({
-              value: author.id,
-              label: `${author.firstName} ${author.lastName}`,
-            })),
-          },
-          {
-            label: 'Date',
-            name: 'date',
-            type: 'number',
-          },
-          {
-            label: 'Genre',
-            name: 'genre',
-            type: 'listInput',
-          },
-        ]}
-        data={data as Data[]}
-      />
+      <BooksTable data={data as Data[]} />
     </div>
   );
 };

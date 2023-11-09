@@ -1,9 +1,6 @@
 import { Injectable, NotFoundException} from '@nestjs/common';
 import { Genre, GenreId } from 'library-api/src/entities';
 import { GenreModel } from 'library-api/src/models';
-import { Injectable } from '@nestjs/common';
-import { Genre } from 'library-api/src/entities';
-import { GenreModel } from 'library-api/src/models';
 import { DataSource, Repository } from 'typeorm';
 import { NotFoundError } from 'rxjs';
 import { adaptBookEntityToBookModel } from '../books/book.utils';

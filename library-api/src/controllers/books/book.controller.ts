@@ -2,10 +2,10 @@ import {
   Controller,
   Get,
   Param,
-  //   Post,
+  Post,
   Delete,
-  //   Body,
-  //   Patch,
+  Body,
+  Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -28,19 +28,15 @@ export class BookController {
 
   @Get('/')
   public async getAll(): Promise<BookPresenter[]> {
-  public async getAll(): Promise<BookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
 
-    return books.map((book) => BookPresenter.from(book));
     return books.map((book) => BookPresenter.from(book));
   }
 
  @Get('/:id')
- @Get('/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
-
-
+    
     return BookPresenter.from(book);
   }
 

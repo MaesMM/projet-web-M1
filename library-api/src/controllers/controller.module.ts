@@ -4,9 +4,15 @@ import { BookController } from 'library-api/src/controllers/books/book.controlle
 import { GenreController } from 'library-api/src/controllers/genres/genre.controller';
 import { RepositoryModule } from 'library-api/src/repositories/repository.module';
 import { UseCasesModule } from 'library-api/src/useCases/useCases.module';
+import { UserController } from './users/user.controller';
 
 @Module({
   imports: [UseCasesModule, RepositoryModule],
-  controllers: [AuthorController, BookController, GenreController],
+  controllers: [
+    AuthorController,
+    BookController,
+    GenreController,
+    UserController,
+  ],
 })
 export class ControllerModule {}

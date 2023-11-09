@@ -1,8 +1,18 @@
-import { User } from 'library-api/src/entities';
+import { User, Book } from 'library-api/src/entities';
+import { BookModel } from 'library-api/src/models';
 import {
   UserRepositoryOutput,
   PlainUserRepositoryOutput,
 } from 'library-api/src/repositories/users/user.repository.type';
+
+const adaptBookToBookModel = (book: Book): BookModel => ({
+  id: book.id,
+  name: book.name,
+  writtenOn: book.writtenOn,
+  author: book.author,
+  userBook: book.userBook,
+  genres: [],
+});
 
 export const adaptUserEntityToPlainUserModel = (
   user: User,
@@ -16,5 +26,6 @@ export const adaptUserEntityToUserModel = (
   user: User,
 ): UserRepositoryOutput => ({
   ...user,
-  userBook: user.userBook.map((userBook) => userBook.book),
+  favoriteBook: adaptBookToBookModel(user.favoriteBook),
+  userBook: user.userBook.map((userBook) => userBook.book.name),
 });

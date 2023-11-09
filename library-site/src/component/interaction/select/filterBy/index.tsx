@@ -2,15 +2,20 @@ import React, { useState } from 'react';
 import { nanoid } from 'nanoid';
 
 type Props = {
+  label: string;
   options: { label: string; value: string }[];
   onChange: (value: string) => void;
 };
 
-const FilterBySelect = ({ options, onChange }: Props): React.ReactElement => {
+const FilterBySelect = ({
+  label,
+  options,
+  onChange,
+}: Props): React.ReactElement => {
   const [selectValue, setSelectValue] = useState(options[0].value);
   return (
     <div className="flex gap-2 items-center">
-      <span>Genre</span>
+      <span>{label}</span>
       <select
         onChange={(e): void => {
           onChange(e.target.value);

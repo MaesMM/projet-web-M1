@@ -15,7 +15,7 @@ export default function Modal({
 }: Props): ReactElement {
   return (
     <div className="h-screen w-screen fixed z-[100000] top-0 left-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-      <Container className="w-[50%] flex flex-col gap-8">
+      <Container className="max-w-[600px] w-[50%] flex flex-col gap-8">
         <div className="flex justify-between gap-2">
           <span className="text-xl font-medium">{title}</span>
           <Close

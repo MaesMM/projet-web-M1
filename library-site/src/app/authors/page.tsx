@@ -5,10 +5,10 @@
 
 import { FC, ReactElement, useState } from 'react';
 import { useQuery } from 'react-query';
-import Table from '@/component/table';
-import Sorter from '@/component/interaction/sorter';
 import { Author } from '@/models';
 import { getAuthors } from '@/requests/authors';
+import AuthorsSorter from '@/component/interaction/sorter/authorsSorter';
+import AuthorsTable from '@/component/table/authorsTable';
 
 type Data = {
   href: string;
@@ -30,23 +30,19 @@ const AuthorsPage: FC = (): ReactElement => {
   if (isLoading || isError || !authors) return <span>Loading...</span>;
 
   const filteredAuthors = authors.filter(
-    (author) =>
+    (author: Author) =>
       author.lastName.toLowerCase().includes(inputValue.toLowerCase()) ||
       author.firstName.toLowerCase().includes(inputValue.toLowerCase()),
   );
 
-  const sortedAuthors = [...filteredAuthors].sort((a, b) => {
-    if (typeSort === 'lastName') {
-      return a.lastName.localeCompare(b.lastName);
-    }
-    if (typeSort === 'firstName') {
-      return a.firstName.localeCompare(b.firstName);
-    }
-
-    return 0;
+  // eslint-disable-next-line arrow-body-style
+  const sortedAuthors: Author[] = [...filteredAuthors].sort((a, b) => {
+    return typeSort === 'firstName' || typeSort === 'lastName'
+      ? a[typeSort].localeCompare(b[typeSort])
+      : 0;
   });
 
-  const data = sortedAuthors.map((author) => ({
+  const data = sortedAuthors.map((author: Author) => ({
     href: author.id,
     data: [
       { label: 'Prénom', value: author.firstName, size: 'md' },
@@ -55,31 +51,11 @@ const AuthorsPage: FC = (): ReactElement => {
   }));
   return (
     <div className="flex flex-col gap-8">
-      <Sorter
-        orderByOptions={[
-          { label: 'Prénom', value: 'firstName' },
-          { label: 'Nom', value: 'lastName' },
-        ]}
+      <AuthorsSorter
         setInputValue={setInputValue}
-        setTypeOrder={setTypeSort}
+        setTypeFilter={setTypeSort}
       />
-      <Table
-        data={data as Data[]}
-        modalTitle="Ajouter un auteur"
-        onSubmitModal={(): void => console.log('hello')}
-        dataModalForm={[
-          {
-            label: 'Prénom',
-            name: 'firstName',
-            type: 'text',
-          },
-          {
-            label: 'Nom',
-            name: 'lastName',
-            type: 'text',
-          },
-        ]}
-      />
+      <AuthorsTable data={data as Data[]} />
     </div>
   );
 };

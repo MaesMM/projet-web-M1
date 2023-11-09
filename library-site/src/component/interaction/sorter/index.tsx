@@ -5,12 +5,14 @@ import SearchBar from '../input/Search';
 import FilterBySelect from '../select/filterBy';
 
 type Props = {
+  label: string;
   setInputValue: (value: string) => void;
   filterByOptions?: { label: string; value: string }[];
   setTypeFilter?: (value: string) => void;
 };
 
 const Sorter = ({
+  label,
   filterByOptions,
   setInputValue,
   setTypeFilter,
@@ -27,6 +29,7 @@ const Sorter = ({
     {setTypeFilter &&
       filterByOptions && ( // Correction de la virgule
         <FilterBySelect
+          label={label}
           options={filterByOptions}
           onChange={(value: string): void => {
             setTypeFilter(value);

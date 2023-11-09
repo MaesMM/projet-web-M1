@@ -31,7 +31,12 @@ export default function FormCreate({
         <ListItem key={nanoid()} title={obj.label}>
           {obj.type === 'select' && (
             <div className="px-4 py-2 bg-[#FFFFFF] rounded-full w-64">
-              <select required className="rounded-full w-full" name={obj.name}>
+              <select
+                required
+                defaultValue={obj.defaultValue}
+                className="rounded-full w-full"
+                name={obj.name}
+              >
                 {obj.options?.map((option) => (
                   <option key={nanoid()} value={option.value}>
                     {option.label}

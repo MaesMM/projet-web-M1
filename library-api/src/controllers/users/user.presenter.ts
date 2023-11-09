@@ -1,6 +1,5 @@
 import { PlainUserModel, UserModel } from 'library-api/src/models';
 import { UserId } from 'library-api/src/entities';
-import { SBookPresenter } from '../books/book.presenter';
 
 export class PlainUserPresenter {
   id: UserId;
@@ -35,7 +34,7 @@ export class UserPresenter {
 
   lastName: string;
 
-  favoriteBook: SBookPresenter;
+  favoriteBook: string[];
 
   userBook: string[];
 

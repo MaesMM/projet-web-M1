@@ -10,11 +10,10 @@ export class UserController {
   @Get('/')
   public async getAll(): Promise<PlainUserPresenter[]> {
     const users = await this.userUseCases.getAllplain();
-
     return users.map(PlainUserPresenter.from);
   }
 
-  @Get('/id')
+  @Get('/:id')
   public async getById(@Param('id') id: UserId): Promise<UserPresenter> {
     const user = await this.userUseCases.getById(id);
 

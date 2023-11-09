@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { BaseEntity, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Book } from './Book';
 import { User } from './User';
 
@@ -10,12 +10,12 @@ export class UserBook extends BaseEntity {
   @PrimaryColumn()
   id: UserBookId;
 
-  @ManyToMany(() => Book, (book) => book.userBook, {
+  @ManyToOne(() => Book, (book) => book.userBook, {
     onDelete: 'CASCADE',
   })
   book: Book;
 
-  @ManyToMany(() => User, (user) => user.userBook, {
+  @ManyToOne(() => User, (user) => user.userBook, {
     onDelete: 'CASCADE',
   })
   user: User;

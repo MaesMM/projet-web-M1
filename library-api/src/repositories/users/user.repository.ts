@@ -18,23 +18,20 @@ export class UserRepository extends Repository<User> {
   }
 
   public async getAllPlain(): Promise<PlainUserRepositoryOutput[]> {
-    const users = await this.find({
-      relations: { userBook: { book: true }, favoriteBook: true },
-    });
-
+    const users = await this.find({ relations: ['favoriteBook', 'userBook', 'userBook.book']});
     return users.map(adaptUserEntityToPlainUserModel);
   }
 
   public async getById(id: UserId): Promise<UserRepositoryOutput> {
-    const user = await this.findOne({
-      where: { id },
-      relations: { userBook: { book: true } },
-    });
+  const user = await this.findOne({
+    where: { id },
+    relations: ['userBook', 'favoriteBook', 'userBook.book'],
+  });
 
-    if (!user) {
-      throw new NotFoundError(`User - '${id}'`);
-    }
-
-    return adaptUserEntityToUserModel(user);
+  if (!user) {
+    throw new NotFoundError(`User - '${id}'`);
   }
+
+  return adaptUserEntityToUserModel(user);
+}
 }

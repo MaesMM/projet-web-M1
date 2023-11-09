@@ -29,6 +29,6 @@ export type Book = {
 export type CreateBook = {
   name: string;
   writtenOn: string;
-  genresId: string[];
+  genres: string[];
   authorId: string;
 };

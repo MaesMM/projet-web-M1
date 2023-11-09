@@ -8,3 +8,8 @@ export type Author = {
     writtenOn: number;
   }[];
 };
+
+export type CreateAuthor = {
+  firstName: string;
+  lastName: string;
+};

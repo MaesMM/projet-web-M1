@@ -20,7 +20,10 @@ export default function FormCreate({
 }: Props): React.ReactElement {
   return (
     <form
-      onSubmit={(e): void => onSubmit(e)}
+      onSubmit={(e): void => {
+        e.preventDefault();
+        onSubmit(e);
+      }}
       className="flex w-full flex-col gap-4"
     >
       {data.map((obj) => (

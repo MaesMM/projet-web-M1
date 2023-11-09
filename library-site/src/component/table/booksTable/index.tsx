@@ -28,11 +28,11 @@ export default function BooksTable({ data }: Props): ReactElement {
       [key: string]: string;
     };
     const { authorId, name, writtenOn } = formValues;
-    const genresId = formValues.genresId.split(',');
+    const genres = formValues.genresId.split(',');
 
     const book: CreateBook = {
       authorId,
-      genresId,
+      genres,
       name,
       writtenOn,
     };
@@ -54,7 +54,7 @@ export default function BooksTable({ data }: Props): ReactElement {
   return (
     <Table
       modalTitle="Créer un livre"
-      onSubmitModal={HandleSubmit}
+      onSubmitModal={(e): void => HandleSubmit(e)}
       dataCreateForm={[
         {
           label: 'Title',

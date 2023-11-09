@@ -16,8 +16,6 @@ import {
 import { DataSource, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
-
-
 @Injectable()
 export class BookRepository extends Repository<Book> {
   constructor(public readonly dataSource: DataSource) {
@@ -47,7 +45,6 @@ export class BookRepository extends Repository<Book> {
       where: { id },
       relations: { bookGenres: { genre: true }, author: true },
     });
-
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);

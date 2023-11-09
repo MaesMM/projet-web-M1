@@ -1,18 +1,21 @@
+/* eslint-disable operator-linebreak */
 import { ReactElement } from 'react';
 import Container from '@/component/container';
 import SearchBar from '../input/Search';
-import OrderBySelect from '../select/orderBy';
+import FilterBySelect from '../select/filterBy';
 
 type Props = {
-  options: { label: string; value: string }[];
+  label: string;
   setInputValue: (value: string) => void;
-  setTypeSort: (value: string) => void;
+  filterByOptions?: { label: string; value: string }[];
+  setTypeFilter?: (value: string) => void;
 };
 
 const Sorter = ({
-  options,
+  label,
+  filterByOptions,
   setInputValue,
-  setTypeSort,
+  setTypeFilter,
 }: Props): ReactElement => (
   <Container className="flex gap-8 justify-between relative">
     <SearchBar
@@ -23,13 +26,22 @@ const Sorter = ({
         setInputValue(e);
       }}
     />
-    <OrderBySelect
-      options={options}
-      onChange={(value: string): void => {
-        setTypeSort(value);
-      }}
-    />
+    {setTypeFilter &&
+      filterByOptions && ( // Correction de la virgule
+        <FilterBySelect
+          label={label}
+          options={filterByOptions}
+          onChange={(value: string): void => {
+            setTypeFilter(value);
+          }}
+        />
+      )}
   </Container>
 );
+
+Sorter.defaultProps = {
+  setTypeFilter: undefined,
+  filterByOptions: undefined,
+};
 
 export default Sorter;

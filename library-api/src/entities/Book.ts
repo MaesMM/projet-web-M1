@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { BookGenre } from './BookGenre';
 import { Author } from './Author';
+import { UserBook } from './UserBooks';
 
 export type BookId = string & { __brand: 'Book' };
 
@@ -25,6 +26,9 @@ export class Book extends BaseEntity {
 
   @ManyToOne(() => Author, (author) => author.books, { onDelete: 'CASCADE' })
   author: Author;
+
+  @OneToMany(() => UserBook, (userBook) => userBook.book)
+  userBook: UserBook[];
 
   @OneToMany(() => BookGenre, (bookGenre) => bookGenre.book)
   bookGenres: BookGenre[];

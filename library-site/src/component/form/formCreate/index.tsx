@@ -5,16 +5,12 @@ import { nanoid } from 'nanoid';
 import ListItem from '../../listItem';
 import Button from '../../interaction/button';
 import InputList from '../../interaction/input/List';
+import SelectMultiple from '@/component/interaction/select/multiple';
+import { DataCreateForm } from '@/models/form';
+import Select from '@/component/interaction/select';
 
 type Props = {
-  data: {
-    label: string;
-    name: string;
-    type: 'select' | 'text' | 'number' | 'listInput';
-    defaultValue?: string | number;
-    defaultValues?: string[];
-    options?: { value: string; label: string }[];
-  }[];
+  data: DataCreateForm[];
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 };
 
@@ -29,37 +25,26 @@ export default function FormCreate({
     >
       {data.map((obj) => (
         <ListItem key={nanoid()} title={obj.label}>
-          {obj.type === 'select' && (
-            <div className="px-4 py-2 bg-[#FFFFFF] rounded-full w-64">
-              <select
-                required
-                defaultValue={obj.defaultValue}
-                className="rounded-full w-full"
-                name={obj.name}
-              >
-                {obj.options?.map((option) => (
-                  <option key={nanoid()} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+          {obj.type === 'select' && !obj.multiple && obj.options && (
+            <Select
+              name={obj.name}
+              options={obj.options}
+              defaultValue={obj.defaultValue}
+            />
           )}
-          {obj.type === 'text' && (
+          {obj.type === 'select' && obj.multiple && (
+            <SelectMultiple
+              name={obj.name}
+              options={obj.options}
+              defaultValue={obj.defaultValue}
+            />
+          )}
+          {(obj.type === 'text' || obj.type === 'number') && (
             <input
               name={obj.name}
               className="px-4 py-2 rounded-full w-64"
               defaultValue={obj.defaultValue}
-              type="text"
-              required
-            />
-          )}
-          {obj.type === 'number' && (
-            <input
-              name={obj.name}
-              className="px-4 py-2 w-xl rounded-full w-64"
-              defaultValue={obj.defaultValue}
-              type="number"
+              type={obj.type}
               required
             />
           )}

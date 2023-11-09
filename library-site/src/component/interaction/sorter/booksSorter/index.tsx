@@ -16,7 +16,10 @@ export default function BooksSorter({
       setInputValue={setInputValue}
       filterByOptions={[
         { label: 'Tous', value: 'all' },
-        { label: 'Science fiction', value: 'Science Fiction' },
+        {
+          label: 'Science fiction',
+          value: '1a3d2f9e-7b6c-4e5b-8a3d-5c6b8e9a4f5b',
+        },
       ]}
       setTypeFilter={setTypeFilter}
     />

@@ -1,8 +1,9 @@
 import React, { ReactElement } from 'react';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import Table from '..';
-import { Author } from '@/models';
+import { Author, CreateBook } from '@/models';
 import { getAuthors } from '@/requests/authors';
+import { createBook } from '@/requests/books';
 
 type Data = {
   href: string;
@@ -13,6 +14,31 @@ type Props = {
 };
 
 export default function BooksTable({ data }: Props): ReactElement {
+  const queryClient = useQueryClient();
+
+  const createBookMutation = useMutation({
+    mutationFn: (book: CreateBook) => createBook(book),
+    onSuccess: () => queryClient.invalidateQueries(['books']),
+  });
+
+  function HandleSubmit(e: React.FormEvent<HTMLFormElement>): void {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const formValues = Object.fromEntries(formData.entries()) as {
+      [key: string]: string;
+    };
+    const { authorId, name, writtenOn } = formValues;
+    const genresId = formValues.genresId.split(',');
+
+    const book: CreateBook = {
+      authorId,
+      genresId,
+      name,
+      writtenOn,
+    };
+    createBookMutation.mutate(book as CreateBook);
+  }
+
   const {
     data: authors,
     isLoading: isAuthorsLoading,
@@ -28,8 +54,8 @@ export default function BooksTable({ data }: Props): ReactElement {
   return (
     <Table
       modalTitle="Créer un livre"
-      onSubmitModal={(e): void => console.log(e)}
-      dataModalForm={[
+      onSubmitModal={HandleSubmit}
+      dataCreateForm={[
         {
           label: 'Title',
           name: 'name',
@@ -37,7 +63,7 @@ export default function BooksTable({ data }: Props): ReactElement {
         },
         {
           label: 'Author',
-          name: 'author',
+          name: 'authorId',
           type: 'select',
           options: authors.map((author: Author) => ({
             value: author.id,
@@ -46,13 +72,25 @@ export default function BooksTable({ data }: Props): ReactElement {
         },
         {
           label: 'Date',
-          name: 'date',
+          name: 'writtenOn',
           type: 'number',
         },
         {
           label: 'Genre',
-          name: 'genre',
-          type: 'listInput',
+          name: 'genresId',
+          type: 'select',
+          multiple: true,
+          //   selectOptions,
+          options: [
+            { value: '1', label: 'Science Fiction' },
+            { value: '2', label: 'Science Fiction' },
+            { value: '3', label: 'Science Fiction' },
+            { value: '4', label: 'Science Fiction' },
+            { value: '5', label: 'Science Fiction' },
+            { value: '6', label: 'Science Fiction' },
+            { value: '7', label: 'Science Fiction' },
+            { value: '8', label: 'Science Fiction' },
+          ],
         },
       ]}
       data={data as Data[]}

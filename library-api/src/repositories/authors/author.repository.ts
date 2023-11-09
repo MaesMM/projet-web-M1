@@ -1,9 +1,15 @@
+
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { NotFoundError } from 'library-api/src/common/errors';
 import { Author, AuthorId } from 'library-api/src/entities';
 import { DataSource, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateAuthorRepositoryInput } from 'library-api/src/repositories/authors/author.repository.type';
+import {
+  AuthorRepositoryOutput,
+  PlainAuthorRepositoryOutput,
+} from './author.repository.type';
+import { adaptAuthorEntityToAuthorModel } from './author.utils';
 
 // Interface générique pour les types de sortie du repository
 interface RepositoryOutput<T> {
@@ -12,11 +18,13 @@ interface RepositoryOutput<T> {
   message?: string;
 }
 
+
 @Injectable()
 export class AuthorRepository extends Repository<Author> {
   constructor(public readonly dataSource: DataSource) {
     super(Author, dataSource.createEntityManager());
   }
+
 
   /**
    * Create a new author
@@ -58,5 +66,26 @@ export class AuthorRepository extends Repository<Author> {
     } catch (error) {
       throw new InternalServerErrorException(`Author - '${id}'`);
     }
+
+  public async getAllPlain(): Promise<PlainAuthorRepositoryOutput[]> {
+    const authors = await this.find({
+      relations: { books: true },
+    });
+
+    return authors.map(adaptAuthorEntityToAuthorModel);
+  }
+
+  public async getById(id: AuthorId): Promise<AuthorRepositoryOutput> {
+    const author = await this.findOne({
+      where: { id },
+      relations: { books: true },
+    });
+
+    if (!author) {
+      throw new NotFoundError(`Authors - '${id}'`);
+    }
+
+    return adaptAuthorEntityToAuthorModel(author);
+
   }
 }

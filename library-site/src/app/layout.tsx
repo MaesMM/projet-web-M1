@@ -4,6 +4,7 @@ import './globals.css';
 import { ReactElement, ReactNode } from 'react';
 import Menu from '@/component/menu';
 import Header from '@/component/header';
+import Provider from '@/component/provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,15 +20,21 @@ export default function RootLayout({
 }): ReactElement {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <main className="flex min-h-screen px-8 gap-8 py-8">
-          <Menu />
-          <div className="flex flex-[3] flex-col gap-8">
-            <Header />
-            {children}
-          </div>
-        </main>
-      </body>
+      <Provider>
+        <body className={inter.className}>
+          <main className="flex h-screen overflow-hidden px-8 gap-8 pt-8">
+            <div className="pb-8 flex flex-1">
+              <Menu />
+            </div>
+            <div className="flex flex-[3] flex-col">
+              <Header />
+              <div className="overflow-y-scroll -mt-12 pt-20 pb-8">
+                {children}
+              </div>
+            </div>
+          </main>
+        </body>
+      </Provider>
     </html>
   );
 }

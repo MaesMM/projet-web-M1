@@ -52,7 +52,13 @@ const Table = ({
       </button>
       {isModalVisible && modalTitle && onSubmitModal && dataCreateForm && (
         <Modal title={modalTitle} setModalVisible={setModalVisible}>
-          <FormCreate onSubmit={onSubmitModal} data={dataCreateForm} />
+          <FormCreate
+            onSubmit={(e): void => {
+              onSubmitModal(e);
+              setModalVisible(false);
+            }}
+            data={dataCreateForm}
+          />
         </Modal>
       )}
     </Container>

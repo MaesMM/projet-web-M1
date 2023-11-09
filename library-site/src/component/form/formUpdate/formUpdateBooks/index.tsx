@@ -2,7 +2,6 @@
 /* eslint-disable operator-linebreak */
 
 import React, { FormEvent } from 'react';
-import { useParams } from 'next/navigation';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import FormUpdate from '..';
 import { Author, Book, CreateBook } from '@/models';
@@ -19,14 +18,13 @@ export default function FormUpdateBooks({
   book,
 }: Props): React.ReactElement {
   const queryClient = useQueryClient();
-  const { id } = useParams();
 
   const updateBookMutation = useMutation({
     mutationFn: (updatedBook: CreateBook) =>
-      updateBook(updatedBook, id as string),
+      updateBook(updatedBook, book.id as string),
     onSuccess: () => {
       queryClient.invalidateQueries(['books']);
-      queryClient.invalidateQueries(['book', id as string]);
+      queryClient.invalidateQueries(['book', book.id as string]);
     },
   });
 
@@ -37,12 +35,11 @@ export default function FormUpdateBooks({
       [key: string]: string;
     };
     const { authorId, name, writtenOn } = formValues;
-    console.log(formValues);
-    const genresId = formValues.genresId.split(',');
+    const genres = formValues.genresId.split(',');
 
     const updatedBook: CreateBook = {
       authorId,
-      genresId,
+      genres,
       name,
       writtenOn,
     };

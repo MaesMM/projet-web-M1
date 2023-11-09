@@ -7,6 +7,7 @@ import Row from '../row';
 import Add from '../../../public/Plus.svg';
 import Modal from '../modal';
 import FormCreate from '../form/formCreate';
+import { DataCreateForm } from '@/models/form';
 
 type Props = {
   pathname?: string;
@@ -17,21 +18,14 @@ type Props = {
   }[];
   modalTitle?: string;
   onSubmitModal?: (e: React.FormEvent<HTMLFormElement>) => void;
-  dataModalForm?: {
-    label: string;
-    name: string;
-    type: 'select' | 'text' | 'number' | 'listInput';
-    defaultValue?: string | number;
-    defaultValues?: string[];
-    options?: { value: string; label: string }[];
-  }[];
+  dataCreateForm?: DataCreateForm[];
 };
 
 const Table = ({
   data,
   modalTitle,
   onSubmitModal,
-  dataModalForm,
+  dataCreateForm,
   pathname,
   title,
 }: Props): React.ReactElement => {
@@ -56,9 +50,9 @@ const Table = ({
       >
         <Add />
       </button>
-      {isModalVisible && modalTitle && onSubmitModal && dataModalForm && (
+      {isModalVisible && modalTitle && onSubmitModal && dataCreateForm && (
         <Modal title={modalTitle} setModalVisible={setModalVisible}>
-          <FormCreate onSubmit={onSubmitModal} data={dataModalForm} />
+          <FormCreate onSubmit={onSubmitModal} data={dataCreateForm} />
         </Modal>
       )}
     </Container>
@@ -69,7 +63,7 @@ Table.defaultProps = {
   title: undefined,
   modalTitle: undefined,
   onSubmitModal: (): void => undefined,
-  dataModalForm: undefined,
+  dataCreateForm: undefined,
 };
 
 export default Table;

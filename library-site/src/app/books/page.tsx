@@ -45,7 +45,7 @@ const BooksPage: FC = (): ReactElement => {
       return (
         (isMatchingAuthor || isMatchingName || isMatchingDate) &&
         book.genres.some(
-          (genre) => genre.toLowerCase() === typeFilter.toLowerCase(),
+          (genre) => genre.id.toLowerCase() === typeFilter.toLowerCase(),
         )
       );
     }
@@ -58,7 +58,11 @@ const BooksPage: FC = (): ReactElement => {
     data: [
       { label: 'Titre', value: book.name, size: 'lg' },
       { label: 'Date', value: String(book.writtenOn), size: 'md' },
-      { label: 'Genres', value: book.genres.join(', '), size: 'lg' },
+      {
+        label: 'Genres',
+        value: book.genres.map((genre) => genre.name).join(', '),
+        size: 'lg',
+      },
       {
         label: 'Auteur',
         value: `${book.author.firstName} ${book.author.lastName}`,

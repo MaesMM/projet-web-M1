@@ -45,5 +45,4 @@ export class AuthorRepository extends Repository<Author> {
     }
     return author;
   }
-
 }

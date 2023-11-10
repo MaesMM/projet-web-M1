@@ -1,4 +1,5 @@
-import { Author, Book, BookGenre, Genre, GenreId } from 'library-api/src/entities';
+import { Author, Book, BookGenre, BookGenreId, Genre, GenreId } from 'library-api/src/entities';
+import { BookModel } from 'library-api/src/models';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,

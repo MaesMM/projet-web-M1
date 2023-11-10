@@ -26,12 +26,12 @@ export class BookRepository extends Repository<Book> {
    * Get all plain books
    * @returns Array of plain books
    */
-  public async getAllPlain(): Promise<PlainBookRepositoryOutput[]> {
+  public async getAllPlain(): Promise<BookRepositoryOutput[]> {
     const books = await this.find({
       relations: { bookGenres: { genre: true }, author: true },
     });
 
-    return books.map(adaptBookEntityToPlainBookModel);
+    return books.map(adaptBookEntityToBookModel);
   }
 
   /**

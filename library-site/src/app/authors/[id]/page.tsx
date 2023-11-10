@@ -52,7 +52,7 @@ const AuthorDetailsPage: FC = () => {
 
   const data = author.books.map(
     (book: { id: string; name: string; writtenOn: number }) => ({
-      href: book.id,
+      href: `${book.id}`,
       data: [
         { label: 'Titre', value: book.name, size: 'lg' },
         { label: 'Date', value: String(book.writtenOn), size: 'md' },
@@ -77,7 +77,7 @@ const AuthorDetailsPage: FC = () => {
           </div>
         )}
       </Container>
-      <BooksTable data={data as Data[]} />
+      <BooksTable title="Livres ecris par l'auteur" data={data as Data[]} />
       {isModalDisplayed && (
         <Modal
           setModalVisible={setIsModalDisplayed}

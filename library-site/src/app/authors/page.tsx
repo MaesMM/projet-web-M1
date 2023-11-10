@@ -17,7 +17,7 @@ type Data = {
 
 const AuthorsPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
-  const [typeSort, setTypeSort] = useState('firstName');
+  const [typeFilter, setTypeFilter] = useState('all');
   const {
     data: authors,
     isLoading,
@@ -29,31 +29,44 @@ const AuthorsPage: FC = (): ReactElement => {
 
   if (isLoading || isError || !authors) return <span>Loading...</span>;
 
-  const filteredAuthors = authors.filter(
-    (author: Author) =>
-      author.lastName.toLowerCase().includes(inputValue.toLowerCase()) ||
-      author.firstName.toLowerCase().includes(inputValue.toLowerCase()),
-  );
+  const filteredAuthors = authors.filter((author: Author) => {
+    const isMatchingLastName = author.lastName
+      .toLowerCase()
+      .includes(inputValue.toLowerCase());
+    const isMatchingFirstName = author.firstName
+      .toLowerCase()
+      .includes(inputValue.toLowerCase());
 
-  // eslint-disable-next-line arrow-body-style
-  const sortedAuthors: Author[] = [...filteredAuthors].sort((a, b) => {
-    return typeSort === 'firstName' || typeSort === 'lastName'
-      ? a[typeSort].localeCompare(b[typeSort])
-      : 0;
+    if (typeFilter !== 'all') {
+      return (
+        (isMatchingLastName || isMatchingFirstName) &&
+        author.books.length.toString() === typeFilter
+      );
+    }
+
+    return isMatchingLastName || isMatchingFirstName;
   });
 
-  const data = sortedAuthors.map((author: Author) => ({
+  const data = filteredAuthors.map((author: Author) => ({
     href: author.id,
     data: [
       { label: 'Prénom', value: author.firstName, size: 'md' },
       { label: 'Nom', value: author.lastName, size: 'md' },
+      {
+        label: 'Nombre de livre(s)',
+        value: author.books.length.toString(),
+        size: 'md',
+      },
     ],
   }));
   return (
     <div className="flex flex-col gap-8">
       <AuthorsSorter
+        quantities={Array.from(
+          new Set(authors.map((author) => author.books.length)),
+        )}
         setInputValue={setInputValue}
-        setTypeFilter={setTypeSort}
+        setTypeFilter={setTypeFilter}
       />
       <AuthorsTable data={data as Data[]} />
     </div>

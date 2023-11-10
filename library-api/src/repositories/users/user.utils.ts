@@ -12,9 +12,9 @@ export const adaptUserEntityToPlainUserModel = (
   userBook: user.userBook.map((userBook) => userBook.book.name),
 });
 
-export const adaptUserEntityToUserModel = (
-  user: User,
-): UserRepositoryOutput => ({
-  ...user,
-  userBook: user.userBook.map((userBook) => userBook.book),
-});
+// export const adaptUserEntityToUserModel = (
+//   user: User,
+// ): UserRepositoryOutput => ({
+//   ...user,
+//   userBook: user.userBook.map((userBook) => userBook.book),
+// });

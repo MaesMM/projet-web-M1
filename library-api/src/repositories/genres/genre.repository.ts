@@ -29,7 +29,7 @@ export class GenreRepository extends Repository<Genre> {
    */
   public async getById(id: GenreId): Promise<GenreRepositoryOutput> {
     const genre = await this.findOne({
-      where: { id: id },
+      where: { id },
       relations: { bookGenres: { genre: true } },
     });
 

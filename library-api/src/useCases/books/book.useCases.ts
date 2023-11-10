@@ -7,7 +7,12 @@ import {
   CreateBookUseCasesInput,
   PlainBookUseCasesOutput,
 } from 'library-api/src/useCases/books/book.useCases.type';
-import { BookModel, GenreModel, PlainBookModel } from 'library-api/src/models';
+import {
+  BookModel,
+  GenreModel,
+  PlainAuthorModel,
+  PlainBookModel,
+} from 'library-api/src/models';
 import { PlainAuthorRepositoryOutput } from 'library-api/src/repositories/authors/author.repository.type';
 import { PlainBookRepositoryOutput } from 'library-api/src/repositories/books/book.repository.type';
 import { CreateBookDto } from 'library-api/src/controllers/books/create-book.dto';
@@ -18,17 +23,17 @@ import { v4 as uuid4 } from 'uuid';
 @Injectable()
 export class BookUseCases {
   constructor(
-  private readonly bookRepository: BookRepository,
-  private readonly authorRepository: AuthorRepository,
-  private readonly genreRepository: GenreRepository,
-) {}
+    private readonly bookRepository: BookRepository,
+    private readonly authorRepository: AuthorRepository,
+    private readonly genreRepository: GenreRepository,
+  ) {}
 
   /**
    * Get all plain books
    * @returns Array of plain books
    */
   public async getAllPlain(): Promise<BookUseCasesOutput[]> {
-   return this.bookRepository.getAllPlain();
+    return this.bookRepository.getAllPlain();
   }
 
   /**
@@ -41,21 +46,21 @@ export class BookUseCases {
     return this.bookRepository.getById(id);
   }
 
+  /**
+   * Create a new book
+   * @param  bodyContent Book's data
+   * @returns Created book
+   * @throws 500: book was not created
+   * @throws 404: author or genre with this ID was not found
+   */
 
- /**
-  * Create a new book
-  * @param  bodyContent Book's data
-  * @returns Created book
-  * @throws 500: book was not created
-  * @throws 404: author or genre with this ID was not found
-  */
-
-  public async create(bodyContent: CreateBookUseCasesInput): Promise<BookUseCasesOutput> {
-    return await this.bookRepository.createBook(bodyContent);
+  public async create(
+    bodyContent: CreateBookUseCasesInput,
+  ): Promise<BookUseCasesOutput> {
+    return this.bookRepository.createBook(bodyContent);
   }
 
-
- /**
+  /**
    * Update a book by its ID
    * @param id Book's ID
    * @param inputBook Book's data
@@ -123,7 +128,7 @@ export class BookUseCases {
    * @throws 404: book with this ID was not found
    * @throws 500: book with this ID was not deleted
    */
-   
+
   public async deleteBook(id: BookId): Promise<BookUseCasesOutput> {
     const book = await this.bookRepository.getById(id);
 
@@ -139,6 +144,4 @@ export class BookUseCases {
 
     return book;
   }
-  
-  
 }

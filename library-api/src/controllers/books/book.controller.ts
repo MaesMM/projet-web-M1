@@ -7,7 +7,7 @@ import {
   Body,
   Patch,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   BookPresenter,
   PlainBookPresenter,
@@ -27,6 +27,11 @@ export class BookController {
 
 
   @Get('/')
+  @ApiOkResponse({
+    description: 'Get all books',
+    type: PlainBookPresenter,
+    isArray: true,
+  })
   public async getAll(): Promise<PlainBookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
 
@@ -34,6 +39,11 @@ export class BookController {
   }
 
   @Get('/:id')
+  @ApiOkResponse({
+    description: 'Get book by id',
+    type: BookPresenter,
+    isArray: true,
+  })
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
 
@@ -42,6 +52,11 @@ export class BookController {
 
   //BEGIN REQUEST CREATE
   @Post('/create')
+  @ApiOkResponse({
+    description: 'Create book',
+    type: CreateBookDto,
+    isArray: true,
+  })
   public async createBook(
     @Body() bodyContent: CreateBookDto,
   ): Promise<BookPresenter> {

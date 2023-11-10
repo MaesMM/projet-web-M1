@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { GenreUseCases } from 'library-api/src/useCases';
 import { GenrePresenter } from './genre.presenter';
 
@@ -9,6 +9,11 @@ export class GenreController {
   constructor(private readonly genreUseCases: GenreUseCases) {}
 
   @Get('/')
+  @ApiOkResponse({
+    description: 'Get all genres',
+    type: GenrePresenter,
+    isArray: true,
+  })
   public async getAll(): Promise<GenrePresenter[]> {
     const genres = await this.genreUseCases.getAllPlain();
 

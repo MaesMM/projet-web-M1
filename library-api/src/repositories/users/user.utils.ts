@@ -5,27 +5,18 @@ import {
   PlainUserRepositoryOutput,
 } from 'library-api/src/repositories/users/user.repository.type';
 
-const adaptBookToBookModel = (book: Book): BookModel => ({
-  id: book.id,
-  name: book.name,
-  writtenOn: book.writtenOn,
-  author: book.author,
-  userBook: book.userBook,
-  genres: [],
-});
-
 export const adaptUserEntityToPlainUserModel = (
   user: User,
 ): PlainUserRepositoryOutput => ({
   ...user,
-  favoriteBook: user.userBook.map((userBook) => userBook.book.name),
-  userBook: user.userBook.map((userBook) => userBook.book.name),
+  favoriteBook: user.favoriteBook ? [user.favoriteBook.name] : [],
+  userBook: user.userBook ? user.userBook.map((userBook) => userBook.book ? userBook.book.name : null) : [], 
 });
 
 export const adaptUserEntityToUserModel = (
   user: User,
-): UserRepositoryOutput => ({
+): PlainUserRepositoryOutput => ({
   ...user,
-  favoriteBook: adaptBookToBookModel(user.favoriteBook),
-  userBook: user.userBook.map((userBook) => userBook.book.name),
+  favoriteBook: user.favoriteBook ? [user.favoriteBook.name] : [],
+  userBook: user.userBook ? user.userBook.map((userBook) => userBook.book ? userBook.book.name : null) : [], 
 });

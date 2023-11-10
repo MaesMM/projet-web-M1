@@ -4,22 +4,28 @@ import { type } from 'os';
 import { AuthorId } from 'library-api/src/entities';
 
 export class CreateBookDto {
+
   @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({ type: String })
+
+  @ApiProperty({ type: Date })
   @IsDate()
   @IsNotEmpty()
   writtenOn: Date;
 
-  @ApiProperty({ type: String })
+
+  @ApiProperty({ type: String, format: 'uuid'})
   @IsString()
   @IsNotEmpty()
   authorId: AuthorId;
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({
+    description: 'List the genres of the book',
+    type: [String] 
+  })
   @IsArray()
   @IsNotEmpty()
   genres: string[];

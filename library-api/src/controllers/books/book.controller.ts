@@ -5,9 +5,9 @@ import {
   Post,
   Delete,
   Body,
-  Patch,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   BookPresenter,
   PlainBookPresenter,
@@ -17,6 +17,7 @@ import { AuthorUseCases, BookUseCases } from 'library-api/src/useCases';
 import { CreateBookDto } from './create-book.dto';
 import { CreateBookRepositoryInput } from 'library-api/src/repositories/books/book.repository.type';
 import { NotFoundError } from 'rxjs';
+
 @ApiTags('Books')
 @Controller('books')
 export class BookController {
@@ -26,20 +27,39 @@ export class BookController {
   ) {}
 
   @Get('/')
-  public async getAll(): Promise<BookPresenter[]> {
+
+  @ApiOkResponse({
+    description: 'Get all books',
+    type: PlainBookPresenter,
+    isArray: true,
+  })
     const books = await this.bookUseCases.getAllPlain();
 
     return books.map((book) => BookPresenter.from(book));
   }
 
+
+
   @Get('/:id')
+  @ApiOkResponse({
+    description: 'Get book by id',
+    type: BookPresenter,
+    isArray: true,
+  })
+
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
-
+    
     return BookPresenter.from(book);
   }
 
   @Post('/')
+ 
+  @ApiOkResponse({
+    description: 'Create book',
+    type: CreateBookDto,
+    isArray: true,
+  })
   public async createBook(
     @Body() bodyContent: CreateBookDto,
   ): Promise<BookPresenter> {
@@ -75,6 +95,7 @@ export class BookController {
   //   }
   // }
 
+
   @Delete('/:id')
   public async deleteBook(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
@@ -83,4 +104,5 @@ export class BookController {
     }
     return BookPresenter.from(book);
   }
+
 }

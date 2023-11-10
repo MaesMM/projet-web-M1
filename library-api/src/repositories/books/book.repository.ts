@@ -59,6 +59,7 @@ export class BookRepository extends Repository<Book> {
       relations: { bookGenres: { genre: true }, author: true },
     });
 
+
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }
@@ -66,22 +67,30 @@ export class BookRepository extends Repository<Book> {
     return adaptBookEntityToBookModel(book);
   }
 
-  /**
-   * Get a book by its name
-   * @param id Book's name
-   * @returns Book if found
-   * @throws 404: book with this ID was not found
-   */
+  public async getByIdTypeBook(id: BookId): Promise<Book> {
+    const book = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true }, author: true },
+    });
+    if (!book) {
+      throw new NotFoundError(`Book - '${id}'`);
+    }
 
-  // public async getByName(name: string): Promise<void> /*Promise<BookRepositoryOutput>*/{
-  //   const book = await this.findOne({ where: { name }, relations: { bookGenres: { genre: true }, author: true }, });
+    return book;
+  }
 
-  //   if (!book) {
-  //     throw new NotFoundError(`Book - '${name}'`);
-  //   }
+  public async getByIdTypeBookGenre(id: BookId): Promise<BookGenre[]> {
+    const book = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true }, author: true },
+    });
+    if (!book) {
+      throw new NotFoundError(`Book - '${id}'`);
+    }
 
-  //   //return adaptBookEntityToBookModel(book);
-  // }
+    return book.bookGenres;
+  }
+  
 
   /**
    * Create a new book
@@ -181,15 +190,4 @@ export class BookRepository extends Repository<Book> {
     return book;
   }
 
-  public async getByIdTypeBook(id: BookId): Promise<Book> {
-    const book = await this.findOne({
-      where: { id },
-      relations: { bookGenres: { genre: true }, author: true },
-    });
-    if (!book) {
-      throw new NotFoundError(`Book - '${id}'`);
-    }
-
-    return book;
-  }
 }

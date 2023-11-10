@@ -41,7 +41,7 @@ export class GenreRepository extends Repository<Genre> {
 
   public async getByIdTypeGenre(id: GenreId): Promise<Genre> {
     const genre = await this.findOne({
-      where: { id },
+      where: { id: id },
       relations: { bookGenres: { genre: true } },
     });
 
@@ -50,4 +50,5 @@ export class GenreRepository extends Repository<Genre> {
     }
     return genre;
   }
+
 }

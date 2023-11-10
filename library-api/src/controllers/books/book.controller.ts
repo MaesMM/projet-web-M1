@@ -125,8 +125,8 @@ export class BookController {
     } = {
       name: bodyContent.name,
       writtenOn: bodyContent.writtenOn,
-      author: author as PlainAuthorModel,
-      genres: bodyContent.genres as GenreId[],
+      author: author,
+      genres: genreId as GenreId[],
     };
 
     const book = await this.bookUseCases.updateBook(id, updateBook);

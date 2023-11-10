@@ -8,10 +8,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  BookPresenter,
-  PlainBookPresenter,
-} from 'library-api/src/controllers/books/book.presenter';
+import { BookPresenter } from 'library-api/src/controllers/books/book.presenter';
 import { BookId } from 'library-api/src/entities';
 import { AuthorUseCases, BookUseCases } from 'library-api/src/useCases';
 import { CreateBookDto } from './create-book.dto';
@@ -25,7 +22,6 @@ export class BookController {
     private readonly authorUseCases: AuthorUseCases,
   ) {}
 
-
   @Get('/')
   public async getAll(): Promise<BookPresenter[]> {
     const books = await this.bookUseCases.getAllPlain();
@@ -33,13 +29,12 @@ export class BookController {
     return books.map((book) => BookPresenter.from(book));
   }
 
- @Get('/:id')
+  @Get('/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
 
     return BookPresenter.from(book);
   }
-
 
   @Post('/create')
   public async createBook(
@@ -47,7 +42,6 @@ export class BookController {
   ): Promise<BookPresenter> {
     // ou Promise<BookPresenter> pour renvoyer un objet
     const author = await this.authorUseCases.getById(bodyContent.authorId);
-
 
     if (!author) {
       // Handle the case where the author with the given ID doesn't exist
@@ -66,7 +60,7 @@ export class BookController {
     return BookPresenter.from(createdBook);
   }
 
-  // @Patch('/:id')  
+  // @Patch('/:id')
   // public async updateBook(
   //   @Param('id') id: BookId,
   //   @Body() bodyContent: CreateBookDto,

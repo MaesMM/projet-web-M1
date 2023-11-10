@@ -7,7 +7,7 @@ import {
   Body,
   Patch,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import {
   BookPresenter,
   PlainBookPresenter,
@@ -105,7 +105,7 @@ export class BookController {
       name: bodyContent.name,
       writtenOn: bodyContent.writtenOn,
       author: author,
-      genres: genreId,
+      genres: genreId as GenreId[],
     };
     const book = await this.bookUseCases.updateBook(id, updateBook);
     return BookPresenter.from(book);

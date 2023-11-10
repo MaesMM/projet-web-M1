@@ -5,28 +5,21 @@ import {
   Post,
   Delete,
   Body,
-  Patch,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  BookPresenter,
-  PlainBookPresenter,
-} from 'library-api/src/controllers/books/book.presenter';
-import { BookId, Genre, GenreId } from 'library-api/src/entities';
-import { AuthorUseCases, BookUseCases, GenreUseCases } from 'library-api/src/useCases';
-import { CreateBookDto, UpdateBookDto } from './create-book.dto';
+import { BookPresenter } from 'library-api/src/controllers/books/book.presenter';
+import { BookId } from 'library-api/src/entities';
+import { AuthorUseCases, BookUseCases } from 'library-api/src/useCases';
+import { CreateBookDto } from './create-book.dto';
 import { CreateBookRepositoryInput } from 'library-api/src/repositories/books/book.repository.type';
 import { NotFoundError } from 'rxjs';
-import { GenreModel } from 'library-api/src/models';
 @ApiTags('Books')
 @Controller('books')
 export class BookController {
   constructor(
     private readonly bookUseCases: BookUseCases,
     private readonly authorUseCases: AuthorUseCases,
-    private readonly genreUseCases: GenreUseCases,
   ) {}
-
 
   @Get('/')
   public async getAll(): Promise<BookPresenter[]> {
@@ -38,7 +31,7 @@ export class BookController {
  @Get('/:id')
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
-
+    
     return BookPresenter.from(book);
   }
 
@@ -64,37 +57,8 @@ export class BookController {
     };
 
     const createdBook = await this.bookUseCases.create(newbook);
+    console.log(createdBook);
     return BookPresenter.from(createdBook);
-  }
-
-  @Patch('/:id')
-  public async updateBook(@Param('id') id: BookId, @Body() bodyContent : UpdateBookDto) : Promise<BookPresenter> {
-    const author = await this.authorUseCases.getById(bodyContent.authorId);
-    
-    if (!author) {
-      throw new NotFoundError(`Author - '${bodyContent.authorId}'`);
-    }
-    
-    let constGenres : GenreModel[] =[];
-    let genreId : string[] = [];
-    for (let i = 0; i < bodyContent.genres.length; i++) {
-      const genre = await this.genreUseCases.getById(bodyContent.genres[i] as GenreId);
-      if (!genre) {
-        throw new NotFoundError(`GenreId - '${bodyContent.genres[i]}'`);
-      }
-      constGenres = GenreModel.push(constGenres, genre);
-      genreId.push(genre.id);
-      
-    }
-
-    const updateBook: CreateBookRepositoryInput = {
-      name: bodyContent.name,
-      writtenOn: bodyContent.writtenOn,
-      author: author,
-      genres: genreId,
-    };
-    const book = await this.bookUseCases.updateBook(id, updateBook);
-    return BookPresenter.from(book);
   }
 
   @Delete('/:id')
@@ -105,4 +69,5 @@ export class BookController {
     }
     return BookPresenter.from(book);
   }
+
 }

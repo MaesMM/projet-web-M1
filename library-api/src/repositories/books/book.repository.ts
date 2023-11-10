@@ -1,16 +1,6 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { NotFoundError } from 'library-api/src/common/errors';
-import {
-  Author,
-  Book,
-  BookGenre,
-  BookId,
-  Genre,
-} from 'library-api/src/entities';
+import { Author, Book, BookGenre, BookId, Genre } from 'library-api/src/entities';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,
@@ -22,7 +12,6 @@ import {
   adaptBookEntityToPlainBookModel,
   adaptBookToRepositoryOutput,
   adaptPlainBookModelToBookEntity,
-  convertToGenreId,
 } from 'library-api/src/repositories/books/book.utils';
 import { DataSource, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -33,7 +22,7 @@ export class BookRepository extends Repository<Book> {
     super(Book, dataSource.createEntityManager());
   }
 
-   /**
+  /**
    * Get all plain books
    * @returns Array of plain books
    */
@@ -42,7 +31,7 @@ export class BookRepository extends Repository<Book> {
       relations: { bookGenres: { genre: true }, author: true },
     });
 
-    return books.map((book) => adaptBookEntityToBookModel(book));
+    return books.map(adaptBookEntityToBookModel);
   }
 
   /**
@@ -56,7 +45,6 @@ export class BookRepository extends Repository<Book> {
       where: { id },
       relations: { bookGenres: { genre: true }, author: true },
     });
-
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
@@ -81,7 +69,7 @@ export class BookRepository extends Repository<Book> {
 
   //   //return adaptBookEntityToBookModel(book);
   // }
-
+  
   /**
    * Create a new book
    * @param book 
@@ -92,7 +80,9 @@ export class BookRepository extends Repository<Book> {
   public async createBook(inputBook: CreateBookRepositoryInput): Promise<BookRepositoryOutput> {
      // gestion d'erreur si le livre existe déjà
     const existingBook = await this.findOne({ where: { name :inputBook.name , author: inputBook.author }, relations: { bookGenres: { genre: true }, author: true }, });
+    console.log(existingBook)
     if (existingBook !== null) {
+      //th
       throw new  BadRequestException(`Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`);
     }
     const {name, writtenOn, author, genres} = inputBook;
@@ -102,9 +92,9 @@ export class BookRepository extends Repository<Book> {
     if (!existingAuthor) {
       throw new NotFoundError(`Author - '${author.id}'`);
     }
-    let genreList = [];
+    let genreList = []
     for (const singleGenre of genres) {
-      const existingGenre = await this.dataSource.createEntityManager().findOne(Genre, { where: { id : convertToGenreId(singleGenre) } });
+      const existingGenre = await this.dataSource.createEntityManager().findOne(Genre, { where: { name: singleGenre } });
       genreList.push(existingGenre)
       if (!existingGenre) {
         throw new NotFoundError(`Genre - '${singleGenre}'`);
@@ -126,7 +116,7 @@ export class BookRepository extends Repository<Book> {
   });
     newBook.bookGenres = existingGenre
     
-    await newBook.save();
+    await newBook.save()
     return adaptBookToRepositoryOutput(newBook);
   } 
 

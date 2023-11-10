@@ -22,7 +22,7 @@ export class AuthorRepository extends Repository<Author> {
     return authors.map(adaptAuthorEntityToAuthorModel);
   }
 
-  public async getById(id: AuthorId): Promise<AuthorRepositoryOutput | Author> {
+  public async getById(id: AuthorId): Promise<AuthorRepositoryOutput> {
     const author = await this.findOne({
       where: { id },
       relations: { books: true },
@@ -31,19 +31,7 @@ export class AuthorRepository extends Repository<Author> {
     if (!author) {
       throw new NotFoundError(`Authors - '${id}'`);
     }
+
     return adaptAuthorEntityToAuthorModel(author);
   }
-
-  public async getByIdTypeAuthor(id: AuthorId): Promise<Author> {
-    const author = await this.findOne({
-      where: { id },
-      relations: { books: true },
-    });
-
-    if (!author) {
-      throw new NotFoundError(`Authors - '${id}'`);
-    }
-    return author;
-  }
-
 }

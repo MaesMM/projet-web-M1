@@ -16,15 +16,15 @@ export class PlainUserPresenter {
     Object.assign(this, data);
   }
 
-//   public static from(data: PlainUserModel): PlainUserPresenter {
-//     return new PlainUserPresenter({
-//       id: data.id,
-//       firstName: data.firstName,
-//       lastName: data.lastName,
-//       favoriteBook: PlainBookPresenter.from(data.favoriteBook),
-//       userBook: data.userBook,
-//     });
-//   }
+  public static from(data: PlainUserModel): PlainUserPresenter {
+    return new PlainUserPresenter({
+      id: data.id,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      favoriteBook: data.favoriteBook,
+      userBook: data.userBook,
+    });
+  }
 }
 
 export class UserPresenter {

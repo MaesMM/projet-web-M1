@@ -12,6 +12,7 @@ import {
   BookPresenter,
   PlainBookPresenter,
 } from 'library-api/src/controllers/books/book.presenter';
+
 import { BookId, Genre, GenreId } from 'library-api/src/entities';
 import { AuthorUseCases, BookUseCases, GenreUseCases } from 'library-api/src/useCases';
 import { CreateBookDto, UpdateBookDto } from './create-book.dto';
@@ -35,21 +36,33 @@ export class BookController {
     return books.map((book) => BookPresenter.from(book));
   }
 
- @Get('/:id')
+
+  @Get('/:id')
+  @ApiOkResponse({
+    description: 'Get book by id',
+    type: BookPresenter,
+    isArray: true,
+  })
+
+
   public async getById(@Param('id') id: BookId): Promise<BookPresenter> {
     const book = await this.bookUseCases.getById(id);
 
     return BookPresenter.from(book);
   }
 
- 
-  @Post('/create')
+  @Post('/')
+  @ApiOkResponse({
+    description: 'Create book',
+    type: CreateBookDto,
+    isArray: true,
+  })
+
   public async createBook(
     @Body() bodyContent: CreateBookDto,
   ): Promise<BookPresenter> {
     // ou Promise<BookPresenter> pour renvoyer un objet
     const author = await this.authorUseCases.getById(bodyContent.authorId);
-
 
     if (!author) {
       // Handle the case where the author with the given ID doesn't exist
@@ -59,13 +72,14 @@ export class BookController {
     const newbook: CreateBookRepositoryInput = {
       name: bodyContent.name,
       writtenOn: bodyContent.writtenOn,
-      author: author,
-      genres: bodyContent.genres,
+      author,
+      genres: bodyContent.genres as GenreId[],
     };
 
     const createdBook = await this.bookUseCases.create(newbook);
     return BookPresenter.from(createdBook);
   }
+
 
   @Patch('/:id')
   public async updateBook(@Param('id') id: BookId, @Body() bodyContent : UpdateBookDto) : Promise<BookPresenter> {
@@ -96,6 +110,7 @@ export class BookController {
     const book = await this.bookUseCases.updateBook(id, updateBook);
     return BookPresenter.from(book);
   }
+
 
   @Delete('/:id')
   public async deleteBook(@Param('id') id: BookId): Promise<BookPresenter> {

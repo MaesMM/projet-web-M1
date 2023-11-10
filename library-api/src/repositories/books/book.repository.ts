@@ -93,7 +93,11 @@ export class BookRepository extends Repository<Book> {
      // gestion d'erreur si le livre existe déjà
     const existingBook = await this.findOne({ where: { name :inputBook.name , author: inputBook.author }, relations: { bookGenres: { genre: true }, author: true }, });
     if (existingBook !== null) {
-      throw new  BadRequestException(`Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`);
+      
+      throw new BadRequestException(
+        `Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`,
+      );
+
     }
     const {name, writtenOn, author, genres} = inputBook;
 
@@ -102,10 +106,12 @@ export class BookRepository extends Repository<Book> {
     if (!existingAuthor) {
       throw new NotFoundError(`Author - '${author.id}'`);
     }
+
     let genreList = [];
     for (const singleGenre of genres) {
       const existingGenre = await this.dataSource.createEntityManager().findOne(Genre, { where: { id : convertToGenreId(singleGenre) } });
       genreList.push(existingGenre)
+      
       if (!existingGenre) {
         throw new NotFoundError(`Genre - '${singleGenre}'`);
     }
@@ -126,6 +132,7 @@ export class BookRepository extends Repository<Book> {
   });
     newBook.bookGenres = existingGenre
     
+
     await newBook.save();
     return adaptBookToRepositoryOutput(newBook);
   } 

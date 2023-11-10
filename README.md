@@ -32,7 +32,15 @@ Explication des choix (Back-end) :
   - De plus, nous avons documenté l'API en utilisant Swagger qui nous permet de ne pas passer par un fichier yaml qui aurait été complexe. Nous avons documentés nos routes afin de rendre le tout lisible et de pouvoir decrire les formats qui sont communiqués au back et depuis le back. 
 
 Choix d'implémentation (Font-end) :
-  ----Antoine----
+- Je suis parti from scratch
+- J'ai commencé par faire un layout du dashboard
+- Pour le propager dans toute les pages, j'ai utilisé une fonctionnalité intrinsèque a l'app router de NextJS 13
+- j'ai commencé par travailler sur les Books, j'ai d'abord utilisé un objet que je declarais dans la front et j'ai ensuite decomposé le tout dans un maximum de composant possible
+- j'ai crée des fonctions de tri mais fautes de temps, je n'ai pas reussi a faire un hook reutilisable par toutes les pages.
+- J'ai ensuite commencé a créer des formulaires pour que je puisse recuperer les données qui permettent de créer / update des row dans la DB.
+- j'ai mis en place SVGR pour pouvoir utiliser des SVG comme des react component
+- J'utilise React query pour recuperer mes données via l'API. Pourquoi utiliser react query ? https://www.kilukru.dev/demarrer-avec-react-query/
+- une fois que tout étais bon pour les books j'ai reutilisé un maximum de composants pour les autres pages et j'ai adapté la logique de tri pour que ca corresponde aux consignes.
 
 
 

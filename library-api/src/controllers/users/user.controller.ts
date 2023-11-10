@@ -2,6 +2,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { UserId } from 'library-api/src/entities';
 import { UserUseCases } from '../../useCases/users/user.useCases.type';
 import { PlainUserPresenter, UserPresenter } from './user.presenter';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('users')
 export class UserController {

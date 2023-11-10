@@ -50,19 +50,15 @@ const AuthorDetailsPage: FC = () => {
     return <span>Loading...</span>;
   }
 
-  const data = books.map((book: Book) => ({
-    href: book.id,
-    data: [
-      { label: 'Titre', value: book.name, size: 'lg' },
-      { label: 'Date', value: String(book.writtenOn), size: 'md' },
-      { label: 'Genres', value: book.genres.join(', '), size: 'lg' },
-      {
-        label: 'Auteur',
-        value: `${book.author.firstName} ${book.author.lastName}`,
-        size: 'md',
-      },
-    ],
-  }));
+  const data = author.books.map(
+    (book: { id: string; name: string; writtenOn: number }) => ({
+      href: `${book.id}`,
+      data: [
+        { label: 'Titre', value: book.name, size: 'lg' },
+        { label: 'Date', value: String(book.writtenOn), size: 'md' },
+      ],
+    }),
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -81,7 +77,7 @@ const AuthorDetailsPage: FC = () => {
           </div>
         )}
       </Container>
-      <BooksTable data={data as Data[]} />
+      <BooksTable title="Livres ecris par l'auteur" data={data as Data[]} />
       {isModalDisplayed && (
         <Modal
           setModalVisible={setIsModalDisplayed}

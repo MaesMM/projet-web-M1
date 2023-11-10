@@ -11,10 +11,10 @@ export class AuthorController {
   constructor(private readonly authorUseCases: AuthorUseCases) {}
 
   @Get('/')
-  public async getAll(): Promise<PlainAuthorPresenter[]> {
+  public async getAll(): Promise<AuthorPresenter[]> {
     const authors = await this.authorUseCases.getAllPlain();
 
-    return authors.map(PlainAuthorPresenter.from);
+    return authors.map(AuthorPresenter.from);
   }
 
   @Get('/:id')

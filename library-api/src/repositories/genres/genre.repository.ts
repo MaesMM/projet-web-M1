@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Genre, GenreId } from 'library-api/src/entities';
 import { GenreModel } from 'library-api/src/models';
 import { DataSource, Repository } from 'typeorm';
@@ -21,16 +21,16 @@ export class GenreRepository extends Repository<Genre> {
     return genres;
   }
 
-   /**
+  /**
    * Get a book by its ID
    * @param id Book's ID
    * @returns Book if found
    * @throws 404: book with this ID was not found
    */
-   public async getById(id: GenreId): Promise<GenreRepositoryOutput> {
+  public async getById(id: GenreId): Promise<GenreRepositoryOutput> {
     const genre = await this.findOne({
       where: { id: id },
-      relations: { bookGenres: { genre: true }},
+      relations: { bookGenres: { genre: true } },
     });
 
     if (!genre) {

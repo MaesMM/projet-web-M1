@@ -14,14 +14,21 @@ export type Book = {
   id: string;
   name: string;
   writtenOn: number;
-  //   genres: {
-  //     id: string;
-  //     name: string;
-  //   }[];
-  genres: string[];
+  genres: {
+    id: string;
+    name: string;
+  }[];
+  //   genres: string[];
   author: {
     id: string;
     firstName: string;
     lastName: string;
   };
+};
+
+export type CreateBook = {
+  name: string;
+  writtenOn: string;
+  genres: string[];
+  authorId: string;
 };

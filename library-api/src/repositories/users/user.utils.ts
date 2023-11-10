@@ -1,4 +1,5 @@
-import { User } from 'library-api/src/entities';
+import { User, Book } from 'library-api/src/entities';
+import { BookModel } from 'library-api/src/models';
 import {
   UserRepositoryOutput,
   PlainUserRepositoryOutput,
@@ -8,8 +9,8 @@ export const adaptUserEntityToPlainUserModel = (
   user: User,
 ): PlainUserRepositoryOutput => ({
   ...user,
-  favoriteBook: user.userBook.map((userBook) => userBook.book.name),
-  userBook: user.userBook.map((userBook) => userBook.book.name),
+  favoriteBook: user.favoriteBook ? [user.favoriteBook.name] : [],
+  userBook: user.userBook ? user.userBook.map((userBook) => userBook.book ? userBook.book.name : null) : [], 
 });
 
 // export const adaptUserEntityToUserModel = (

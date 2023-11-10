@@ -10,10 +10,12 @@ export class CreateBookDto {
   @IsNotEmpty()
   name: string;
 
+
   @ApiProperty({ type: Date })
   @IsDate()
   @IsNotEmpty()
   writtenOn: Date;
+
 
   @ApiProperty({ type: String, format: 'uuid'})
   @IsString()
@@ -27,7 +29,6 @@ export class CreateBookDto {
   @IsArray()
   @IsNotEmpty()
   genres: string[];
-
 }
 
 export class UpdateBookDto {
@@ -47,5 +48,4 @@ export class UpdateBookDto {
   @ApiProperty({ type: [String] })
   @IsArray()
   genres: string[];
-
 }

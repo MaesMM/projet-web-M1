@@ -26,7 +26,7 @@ export class GenreController {
   @Get('/:id')
   public async getById(@Param('id') id: string): Promise<GenrePresenter> {
     const genre = await this.genreUseCases.getById(stringToGenreId(id));
-  
+
     return GenrePresenter.from(genre);
   }
 }

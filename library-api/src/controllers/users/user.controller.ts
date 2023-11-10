@@ -3,6 +3,7 @@ import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { UserId } from 'library-api/src/entities';
 import { UserUseCases } from '../../useCases/users/user.useCases.type';
 import { PlainUserPresenter, UserPresenter } from './user.presenter';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('users')

@@ -81,8 +81,11 @@ export class BookRepository extends Repository<Book> {
     const existingBook = await this.findOne({ where: { name :inputBook.name , author: inputBook.author }, relations: { bookGenres: { genre: true }, author: true }, });
     console.log(existingBook)
     if (existingBook !== null) {
-      //th
-      throw new  BadRequestException(`Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`);
+      // th
+      throw new BadRequestException(
+        `Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`,
+      );
+===
     }
     const {name, writtenOn, author, genres} = inputBook;
 
@@ -91,34 +94,61 @@ export class BookRepository extends Repository<Book> {
     if (!existingAuthor) {
       throw new NotFoundError(`Author - '${author.id}'`);
     }
-    let genreList = []
+    const genreList = [] as Genre[];
     for (const singleGenre of genres) {
-      const existingGenre = await this.dataSource.createEntityManager().findOne(Genre, { where: { name: singleGenre } });
-      genreList.push(existingGenre)
+      const existingGenre = await this.dataSource
+        .createEntityManager()
+        .findOne(Genre, { where: { id: singleGenre } });
+      genreList.push(existingGenre);
+
       if (!existingGenre) {
         throw new NotFoundError(`Genre - '${singleGenre}'`);
     }
   }
   
-  const newBook = new Book();
-  newBook.id = uuidv4()
-  newBook.name = name
-  newBook.writtenOn =writtenOn
-  newBook.author= existingAuthor
+  //const newBook = new Book();
+  //newBook.id = uuidv4()
+  //newBook.name = name
+  //newBook.writtenOn =writtenOn
+  //newBook.author= existingAuthor
   
-  const existingGenre = genreList.map((genre) => {
-    const bookGenre = new BookGenre();
-    bookGenre.id = uuidv4();
-    bookGenre.book = newBook;
-    bookGenre.genre = genre;
-    return bookGenre;
-  });
-    newBook.bookGenres = existingGenre
+  //const existingGenre = genreList.map((genre) => {
+    //const bookGenre = new BookGenre();
+    //bookGenre.id = uuidv4();
+    //bookGenre.book = newBook;
+    //bookGenre.genre = genre;
+    //return bookGenre;
+  //});
+   // newBook.bookGenres = existingGenre
     
-    await newBook.save()
-    return adaptBookToRepositoryOutput(newBook);
-  } 
+   // await newBook.save()
+   // return adaptBookToRepositoryOutput(newBook);
+  //} 
 
+    console.log(genreList);
+
+    const newBook = new Book();
+    newBook.id = uuidv4();
+    newBook.name = name;
+    newBook.writtenOn = writtenOn;
+    newBook.author = existingAuthor;
+
+    const existingGenre = genreList.map((genre) => {
+      const bookGenre = new BookGenre();
+      bookGenre.id = uuidv4();
+      bookGenre.book = newBook;
+      bookGenre.genre = genre;
+      return bookGenre;
+    });
+    newBook.bookGenres = existingGenre;
+
+    existingGenre.forEach(async (bookGenre) => {
+      await bookGenre.save();
+    });
+
+    await newBook.save();
+    return adaptBookToRepositoryOutput(newBook);
+  }
 
 
     

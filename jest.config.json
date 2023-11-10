@@ -1,0 +1,6 @@
+{
+    "preset": "ts-jest",
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "modulePaths": ["<rootDir>"]
+  }
+  

@@ -62,7 +62,7 @@ const BooksDetailsPage: FC = () => {
               {book.writtenOn as unknown as string}
             </ListItem>
             <ListItem title="Genres">
-              {book.genres.map((obj) => obj).join(', ')}
+              {book.genres.map((genre) => genre.name).join(', ')}
             </ListItem>
           </div>
         )}

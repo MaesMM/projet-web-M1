@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from 'react-query';
 import React, { ReactElement } from 'react';
 import Table from '..';
-import { CreateAuthor } from '@/models';
-import { createAuthor } from '@/requests/authors';
+import { CreateUser } from '@/models';
+import { createUser } from '@/requests/users';
 
 type Data = {
   href: string;
@@ -13,12 +13,12 @@ type Props = {
   data: Data[];
 };
 
-export default function AuthorsTable({ data }: Props): ReactElement {
+export default function UsersTable({ data }: Props): ReactElement {
   const queryClient = useQueryClient();
 
-  const createAuthorMutation = useMutation({
-    mutationFn: (author: CreateAuthor) => createAuthor(author),
-    onSuccess: () => queryClient.invalidateQueries(['authors']),
+  const createUsersMutation = useMutation({
+    mutationFn: (user: CreateUser) => createUser(user),
+    onSuccess: () => queryClient.invalidateQueries(['Users']),
   });
 
   function HandleSubmit(e: React.FormEvent<HTMLFormElement>): void {
@@ -29,16 +29,16 @@ export default function AuthorsTable({ data }: Props): ReactElement {
     };
     const { firstName, lastName } = formValues;
 
-    const author: CreateAuthor = {
+    const user: CreateUser = {
       firstName,
       lastName,
     };
-    createAuthorMutation.mutate(author as CreateAuthor);
+    createUsersMutation.mutate(user as CreateUser);
   }
   return (
     <Table
       data={data as Data[]}
-      modalTitle="Ajouter un auteur"
+      modalTitle="Ajouter un utilisateur"
       onSubmitModal={(e): void => HandleSubmit(e)}
       dataCreateForm={[
         {

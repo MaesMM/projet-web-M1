@@ -1,17 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundError  } from 'library-api/src/common/errors';
-import { Book, BookGenre, BookId} from 'library-api/src/entities';
+import { BookId} from 'library-api/src/entities';
 import { BookRepository } from 'library-api/src/repositories';
 import {
   BookUseCasesOutput,
   CreateBookUseCasesInput,
-  PlainBookUseCasesOutput,
 } from 'library-api/src/useCases/books/book.useCases.type';
-import { PlainBookModel } from 'library-api/src/models';
-import { PlainAuthorRepositoryOutput } from 'library-api/src/repositories/authors/author.repository.type';
-import { PlainBookRepositoryOutput } from 'library-api/src/repositories/books/book.repository.type';
-import { CreateBookDto } from 'library-api/src/controllers/books/create-book.dto';
-
   
 
 
@@ -25,8 +19,14 @@ export class BookUseCases {
    * Get all plain books
    * @returns Array of plain books
    */
-  public async getAllPlain(): Promise<PlainBookUseCasesOutput[]> {
-    return this.bookRepository.getAllPlain();
+  public async getAllPlain(): Promise<BookUseCasesOutput[]> {
+    const plainBooks = await this.bookRepository.getAllPlain();
+    return plainBooks.map(book => ({
+      ...book,
+      userBook: null, // Ajoutez la propriété userBook
+      author: this.authorRepository.getAuthorFromPlain(book.author), // Convertissez PlainAuthorModel en Author
+      genres: book.genres.map(genre => this.genreRepository.getGenreFromName(genre)), // Convertissez les chaînes de caractères en GenreModel
+    }));
   }
 
   /**

@@ -8,7 +8,7 @@
     "api:start": "nest start",
     "api:start:dev": "cd library-api && nest start --watch",
     "api:lint": "eslint \"library-api/**/*.ts\" --fix",
-    "api:test": "jest --watch --config jest.config.json",
+    "api:test": "jest --config jest.config.json",
     "site:dev": "cd library-site && next dev",
     "site:build": "cd library-site && next build",
     "site:start": "cd library-site && next start",

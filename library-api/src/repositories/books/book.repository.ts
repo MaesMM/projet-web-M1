@@ -97,7 +97,7 @@ export class BookRepository extends Repository<Book> {
     });
     console.log(existingBook);
     if (existingBook !== null) {
-      //th
+      // th
       throw new BadRequestException(
         `Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`,
       );
@@ -111,16 +111,18 @@ export class BookRepository extends Repository<Book> {
     if (!existingAuthor) {
       throw new NotFoundError(`Author - '${author.id}'`);
     }
-    let genreList = [];
+    const genreList = [] as Genre[];
     for (const singleGenre of genres) {
       const existingGenre = await this.dataSource
         .createEntityManager()
-        .findOne(Genre, { where: { name: singleGenre } });
+        .findOne(Genre, { where: { id: singleGenre } });
       genreList.push(existingGenre);
       if (!existingGenre) {
         throw new NotFoundError(`Genre - '${singleGenre}'`);
       }
     }
+
+    console.log(genreList);
 
     const newBook = new Book();
     newBook.id = uuidv4();
@@ -136,6 +138,10 @@ export class BookRepository extends Repository<Book> {
       return bookGenre;
     });
     newBook.bookGenres = existingGenre;
+
+    existingGenre.forEach(async (bookGenre) => {
+      await bookGenre.save();
+    });
 
     await newBook.save();
     return adaptBookToRepositoryOutput(newBook);

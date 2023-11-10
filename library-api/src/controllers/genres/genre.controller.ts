@@ -6,7 +6,6 @@ import { GenreId } from 'library-api/src/entities';
 import { stringToGenreId } from 'library-api/src/repositories/genres/genre.utils';
 
 @ApiTags('Genres')
-@ApiTags('Genres')
 @Controller('genres')
 export class GenreController {
   constructor(private readonly genreUseCases: GenreUseCases) {}
@@ -21,7 +20,7 @@ export class GenreController {
   @Get('/:id')
   public async getById(@Param('id') id: string): Promise<GenrePresenter> {
     const genre = await this.genreUseCases.getById(stringToGenreId(id));
-  
+
     return GenrePresenter.from(genre);
   }
 }

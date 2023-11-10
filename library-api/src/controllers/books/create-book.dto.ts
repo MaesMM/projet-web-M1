@@ -4,15 +4,17 @@ import { type } from 'os';
 import { AuthorId } from 'library-api/src/entities';
 
 export class CreateBookDto {
-
+  @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
   name: string;
 
+  @ApiProperty({ type: String })
   @IsDate()
   @IsNotEmpty()
   writtenOn: Date;
 
+  @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
   authorId: AuthorId;
@@ -21,7 +23,6 @@ export class CreateBookDto {
   @IsArray()
   @IsNotEmpty()
   genres: string[];
-
 }
 
 export class UpdateBookDto {
@@ -41,5 +42,4 @@ export class UpdateBookDto {
   @ApiProperty({ type: [String] })
   @IsArray()
   genres: string[];
-
 }

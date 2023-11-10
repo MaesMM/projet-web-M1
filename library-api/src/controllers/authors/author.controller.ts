@@ -1,11 +1,12 @@
 import { Controller, Get, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
   AuthorPresenter,
   PlainAuthorPresenter,
 } from 'library-api/src/controllers/authors/author.presenter';
 import { AuthorId } from 'library-api/src/entities';
 import { AuthorUseCases } from 'library-api/src/useCases';
-
+@ApiTags('Authors')
 @Controller('authors')
 export class AuthorController {
   constructor(private readonly authorUseCases: AuthorUseCases) {}

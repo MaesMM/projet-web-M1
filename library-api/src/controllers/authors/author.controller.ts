@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { ApiAcceptedResponse, ApiTags } from '@nestjs/swagger';
 
 import {
@@ -7,6 +7,8 @@ import {
 } from 'library-api/src/controllers/authors/author.presenter';
 import { AuthorId } from 'library-api/src/entities';
 import { AuthorUseCases } from 'library-api/src/useCases';
+import { UpdateBookDto } from './author.controller.dto';
+@ApiTags('Authors')
 
 @Controller('authors')
 export class AuthorController {
@@ -25,4 +27,20 @@ export class AuthorController {
 
     return AuthorPresenter.from(author);
   }
+
+  @Patch('/:id')
+  public async update(
+    @Param('id') id: AuthorId,
+    @Body() bodyContent: UpdateBookDto,
+  ): Promise<PlainAuthorPresenter> {
+    const plainAuhtor : PlainAuthorPresenter = {
+      firstName: bodyContent.firstName,
+      lastName: bodyContent.lastName,
+      id: id,
+    }
+    const author = await this.authorUseCases.update(id, plainAuhtor);
+
+    return PlainAuthorPresenter.from(author);
+  }
+
 }

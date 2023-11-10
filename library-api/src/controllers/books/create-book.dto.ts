@@ -1,24 +1,19 @@
 import { IsString, IsDate, IsNotEmpty, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { type } from 'os';
 import { AuthorId } from 'library-api/src/entities';
-import { Auth } from 'typeorm';
 
 export class CreateBookDto {
-
+  @ApiProperty({ type: String })
   @IsString()
   @IsNotEmpty()
   name: string;
 
-
-
-  @ApiProperty({ type: Date })
+  @ApiProperty({ type: String })
   @IsDate()
   @IsNotEmpty()
   writtenOn: Date;
 
-
-  @ApiProperty({ type: String, format: 'uuid'})
+  @ApiProperty({ type: String, format: 'uuid' })
   @IsString()
   @IsNotEmpty()
   authorId: AuthorId;
@@ -30,12 +25,15 @@ export class CreateBookDto {
 }
 
 export class UpdateBookDto {
+  @ApiProperty({ type: String })
   @IsString()
   name: string;
 
+  @ApiProperty({ type: String })
   @IsDate()
   writtenOn: Date;
 
+  @ApiProperty({ type: String, format: 'uuid' })
   @IsString()
   authorId: AuthorId;
 
@@ -43,9 +41,7 @@ export class UpdateBookDto {
   @IsArray()
   genres: string[];
 
-
   @ApiProperty({ type: [String] })
   @IsArray()
-  userBook: String[];
-
+  userBook: string[];
 }

@@ -29,7 +29,7 @@ export class GenreRepository extends Repository<Genre> {
    */
   public async getById(id: GenreId): Promise<GenreRepositoryOutput> {
     const genre = await this.findOne({
-      where: { id: id },
+      where: { id },
       relations: { bookGenres: { genre: true } },
     });
 
@@ -37,5 +37,17 @@ export class GenreRepository extends Repository<Genre> {
       throw new NotFoundException(`genre - '${id}'`);
     }
     return adaptGenreEntityToGenreModel(genre);
+  }
+
+  public async getByIdTypeGenre(id: GenreId): Promise<Genre> {
+    const genre = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true } },
+    });
+
+    if (!genre) {
+      throw new NotFoundException(`genre - '${id}'`);
+    }
+    return genre;
   }
 }

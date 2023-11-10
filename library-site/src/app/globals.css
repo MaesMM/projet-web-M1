@@ -9,10 +9,22 @@
 }
 
 body {
-  background: rgb(180, 194, 202);
+  /* background: rgb(180, 194, 202);
   background: linear-gradient(
     45deg,
     rgba(180, 194, 202, 1) 0%,
     rgba(135, 158, 170, 1) 100%
-  );
+  ); */
+  background-color: hsla(201, 17%, 74%, 1);
+  background-image: radial-gradient(
+      at 34% 0%,
+      hsla(206, 35%, 78%, 1) 0px,
+      transparent 50%
+    ),
+    radial-gradient(at 60% 99%, hsla(191, 29%, 68%, 1) 0px, transparent 50%),
+    radial-gradient(at 99% 77%, hsla(192, 17%, 67%, 1) 0px, transparent 50%),
+    radial-gradient(at 74% 24%, hsla(184, 23%, 64%, 1) 0px, transparent 50%),
+    radial-gradient(at 99% 21%, hsla(201, 16%, 62%, 1) 0px, transparent 50%),
+    radial-gradient(at 1% 19%, hsla(189, 16%, 69%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 78%, hsla(193, 24%, 58%, 1) 0px, transparent 50%);
 }

@@ -1,34 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundError  } from 'library-api/src/common/errors';
-import { Book, BookGenre, BookId} from 'library-api/src/entities';
-import { AuthorRepository, BookRepository, GenreRepository } from 'library-api/src/repositories';
+import { BookId} from 'library-api/src/entities';
+import { BookRepository } from 'library-api/src/repositories';
 import {
   BookUseCasesOutput,
   CreateBookUseCasesInput,
-  PlainBookUseCasesOutput,
 } from 'library-api/src/useCases/books/book.useCases.type';
-import { BookModel, GenreModel, PlainBookModel } from 'library-api/src/models';
-import { PlainAuthorRepositoryOutput } from 'library-api/src/repositories/authors/author.repository.type';
-import { PlainBookRepositoryOutput } from 'library-api/src/repositories/books/book.repository.type';
-import { CreateBookDto } from 'library-api/src/controllers/books/create-book.dto';
-import { convertBookModelToPlainBookModel } from 'library-api/src/useCases/books/book.useCases.type';
   
 
 
 @Injectable()
 export class BookUseCases {
-  constructor(
-  private readonly bookRepository: BookRepository,
-  private readonly authorRepository: AuthorRepository,
-  private readonly genreRepository: GenreRepository,
-) {}
+  authorRepository: any;
+  genreRepository: any;
+  constructor(private readonly bookRepository: BookRepository) {}
 
   /**
    * Get all plain books
    * @returns Array of plain books
    */
   public async getAllPlain(): Promise<BookUseCasesOutput[]> {
-   return this.bookRepository.getAllPlain();
+    const plainBooks = await this.bookRepository.getAllPlain();
+    return plainBooks.map(book => ({
+      ...book,
+      userBook: null, // Ajoutez la propriété userBook
+      author: this.authorRepository.getAuthorFromPlain(book.author), // Convertissez PlainAuthorModel en Author
+      genres: book.genres.map(genre => this.genreRepository.getGenreFromName(genre)), // Convertissez les chaînes de caractères en GenreModel
+    }));
   }
 
   /**
@@ -55,43 +53,32 @@ export class BookUseCases {
   }
 
 
- /**
+  /**
    * Update a book by its ID
    * @param id Book's ID
-   * @param inputBook Book's data
+   * @param book Book's data
    * @returns Updated book
    * @throws 404: book with this ID was not found
    * @throws 500: book with this ID was not updated
    */
- public async updateBook(id: BookId,inputBook: CreateBookUseCasesInput,): Promise<BookUseCasesOutput> {
-  let  bookToUpdate = await this.bookRepository.getById(id);
- 
-  if (!bookToUpdate) {
-    throw new NotFoundError(`Book - '${id}'`);
-  }
-  
-  bookToUpdate.name = inputBook.name;
-  bookToUpdate.writtenOn = inputBook.writtenOn;
-  
-  const author = await this.authorRepository.getByIdTypeAuthor(inputBook.author.id,);
-  if (!author) {
-    throw new NotFoundError(`Author - '${inputBook.author.id}'`);
-  }
-  bookToUpdate.author = author;
+  public async updateBook(
+    id: BookId,
+    book: CreateBookUseCasesInput,
+  ): Promise<BookUseCasesOutput> {
+    const bookToUpdate = await this.bookRepository.getById(id);
 
-  const genres : GenreModel[] = [];
-  for (const id of inputBook.genres) {
-    const genreToAdd = await this.genreRepository.getById(inputBook.genres[id]);
-    if (!genreToAdd) {
-      throw new NotFoundError(`Genre - '${inputBook.genres[id]}'`);
+    if (!bookToUpdate) {
+      throw new NotFoundError(`Book - '${id}'`);
     }
-    genres.push(genreToAdd);
+
+    try {
+      await this.bookRepository.update(id, book);
+    } catch (error) {
+      throw new Error(`Book - '${id}' was not updated`);
+    }
+
+    return this.bookRepository.getById(id);
   }
-
-
-  bookToUpdate.genres = genres; 
-  return await this.bookRepository.updateBook(bookToUpdate);
-}
 
 
   /**

@@ -19,7 +19,6 @@ export type BookModel = {
   genres: GenreModel[];
 };
 
-
 export type SBookModel = {
   id: BookId;
   name: string;

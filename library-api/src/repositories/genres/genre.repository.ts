@@ -38,4 +38,17 @@ export class GenreRepository extends Repository<Genre> {
     }
     return adaptGenreEntityToGenreModel(genre);
   }
+
+  public async getByIdTypeGenre(id: GenreId): Promise<Genre> {
+    const genre = await this.findOne({
+      where: { id: id },
+      relations: { bookGenres: { genre: true } },
+    });
+
+    if (!genre) {
+      throw new NotFoundException(`genre - '${id}'`);
+    }
+    return genre;
+  }
+
 }

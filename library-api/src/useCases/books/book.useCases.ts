@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NotFoundError  } from 'library-api/src/common/errors';
-import { Book, BookGenre, BookId} from 'library-api/src/entities';
+import { Book, BookGenre, BookId, GenreId} from 'library-api/src/entities';
 import { AuthorRepository, BookRepository, GenreRepository } from 'library-api/src/repositories';
 import {
   BookUseCasesOutput,
@@ -12,7 +12,7 @@ import { PlainAuthorRepositoryOutput } from 'library-api/src/repositories/author
 import { PlainBookRepositoryOutput } from 'library-api/src/repositories/books/book.repository.type';
 import { CreateBookDto } from 'library-api/src/controllers/books/create-book.dto';
 import { convertBookModelToPlainBookModel } from 'library-api/src/useCases/books/book.useCases.type';
-  
+import { v4 as uuid4 } from 'uuid';
 
 
 @Injectable()
@@ -78,18 +78,40 @@ export class BookUseCases {
     throw new NotFoundError(`Author - '${inputBook.author.id}'`);
   }
   bookToUpdate.author = author;
+  
+  const bookGenre = await this.bookRepository.getByIdTypeBookGenre(id);
+  bookGenre.forEach(async (bookGenre) => {
+    await bookGenre.remove();
+  });
 
-  const genres : GenreModel[] = [];
-  for (const id of inputBook.genres) {
-    const genreToAdd = await this.genreRepository.getById(inputBook.genres[id]);
-    if (!genreToAdd) {
-      throw new NotFoundError(`Genre - '${inputBook.genres[id]}'`);
-    }
-    genres.push(genreToAdd);
-  }
+  const genreIds: GenreId[] = inputBook.genres; 
+  const genres: GenreModel[] = await Promise.all(
+    genreIds.map(async (genreId) => {
+      const genreToAdd = await this.genreRepository.getById(genreId);
 
+      if (!genreToAdd) {
+        throw new NotFoundError(`Genre - '${genreId}'`);
+      }
+      return genreToAdd;
+    })
+  );
 
-  bookToUpdate.genres = genres; 
+  
+  const book = await this.bookRepository.getByIdTypeBook(id)
+
+  await Promise.all(
+    genres.map(async (genre) => {
+      const bookGenre = new BookGenre();
+      bookGenre.id = uuid4();
+      bookGenre.book = book;
+      const genreEntity = await this.genreRepository.getByIdTypeGenre(genre.id);
+      bookGenre.genre = genreEntity;
+      await bookGenre.save();
+    })
+  );
+  
+  bookToUpdate.genres = genres;
+
   return await this.bookRepository.updateBook(bookToUpdate);
 }
 

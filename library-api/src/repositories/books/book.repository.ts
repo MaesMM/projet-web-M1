@@ -56,8 +56,6 @@ export class BookRepository extends Repository<Book> {
       where: { id },
       relations: { bookGenres: { genre: true }, author: true },
     });
-
-
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }
@@ -65,22 +63,30 @@ export class BookRepository extends Repository<Book> {
     return adaptBookEntityToBookModel(book);
   }
 
-  /**
-   * Get a book by its name
-   * @param id Book's name
-   * @returns Book if found
-   * @throws 404: book with this ID was not found
-   */
+  public async getByIdTypeBook(id: BookId): Promise<Book> {
+    const book = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true }, author: true },
+    });
+    if (!book) {
+      throw new NotFoundError(`Book - '${id}'`);
+    }
 
-  // public async getByName(name: string): Promise<void> /*Promise<BookRepositoryOutput>*/{
-  //   const book = await this.findOne({ where: { name }, relations: { bookGenres: { genre: true }, author: true }, });
+    return book;
+  }
 
-  //   if (!book) {
-  //     throw new NotFoundError(`Book - '${name}'`);
-  //   }
+  public async getByIdTypeBookGenre(id: BookId): Promise<BookGenre[]> {
+    const book = await this.findOne({
+      where: { id },
+      relations: { bookGenres: { genre: true }, author: true },
+    });
+    if (!book) {
+      throw new NotFoundError(`Book - '${id}'`);
+    }
 
-  //   //return adaptBookEntityToBookModel(book);
-  // }
+    return book.bookGenres;
+  }
+  
 
   /**
    * Create a new book
@@ -108,14 +114,16 @@ export class BookRepository extends Repository<Book> {
     }
 
     let genreList = [];
-    for (const singleGenre of genres) {
-      const existingGenre = await this.dataSource.createEntityManager().findOne(Genre, { where: { id : convertToGenreId(singleGenre) } });
-      genreList.push(existingGenre)
-      
+    genres.forEach(async (singleGenre) => {
+      const existingGenre = await this.dataSource
+        .createEntityManager()
+        .findOne(Genre, { where: { id: convertToGenreId(singleGenre) } });
+      genreList.push(existingGenre);
+
       if (!existingGenre) {
-        throw new NotFoundError(`Genre - '${singleGenre}'`);
-    }
-  }
+        throw new NotFoundError("Genre - '${singleGenre}'");
+      }
+    });
   
   const newBook = new Book();
   newBook.id = uuidv4()
@@ -130,8 +138,12 @@ export class BookRepository extends Repository<Book> {
     bookGenre.genre = genre;
     return bookGenre;
   });
+
     newBook.bookGenres = existingGenre
     
+    existingGenre.forEach(async (bookGenre) => {
+      await bookGenre.save();
+    });
 
     await newBook.save();
     return adaptBookToRepositoryOutput(newBook);

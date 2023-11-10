@@ -10,24 +10,27 @@ type Props = {
   title?: string;
   onClickEdit?: () => void;
   onClickDelete?: () => void;
+  width?: string;
 };
 
 const Container = ({
   children,
   className,
+  width,
   title,
   onClickDelete,
   onClickEdit,
 }: Props): React.ReactElement => (
   <div
     className={clsx(
-      'flex w-full rounded-xl flex relative bg-white-500 px-4 py-4 shadow',
+      'flex rounded-xl flex relative bg-white-500 px-4 py-4 shadow',
       className,
+      width,
     )}
   >
     {title && (
       <div className="flex justify-between items-center w-full">
-        <span className="text-xl font-medium">Information Generales</span>
+        <span className="text-xl font-medium">{title}</span>
         <div className="flex">
           {onClickEdit && (
             <Button
@@ -56,6 +59,7 @@ Container.defaultProps = {
   title: undefined,
   onClickDelete: undefined,
   onClickEdit: undefined,
+  width: 'w-full',
 };
 
 export default Container;

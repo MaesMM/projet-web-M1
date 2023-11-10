@@ -1,19 +1,27 @@
+/* eslint-disable operator-linebreak */
 import React, { ReactElement } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import Table from '..';
-import { Author, CreateBook } from '@/models';
+import { Author, CreateBook, Genre } from '@/models';
 import { getAuthors } from '@/requests/authors';
 import { createBook } from '@/requests/books';
+import { getGenres } from '@/requests/genres';
 
 type Data = {
   href: string;
   data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
 };
 type Props = {
+  isAdding?: boolean;
   data: Data[];
+  title?: string;
 };
 
-export default function BooksTable({ data }: Props): ReactElement {
+export default function BooksTable({
+  data,
+  isAdding,
+  title,
+}: Props): ReactElement {
   const queryClient = useQueryClient();
 
   const createBookMutation = useMutation({
@@ -47,53 +55,74 @@ export default function BooksTable({ data }: Props): ReactElement {
     queryKey: ['authors'],
     queryFn: () => getAuthors(),
   });
-  if (!authors || isAuthorsError || isAuthorsLoading) {
+
+  const {
+    data: genres,
+    isLoading,
+    isError,
+  } = useQuery<Genre[]>({
+    queryKey: ['genres'],
+    queryFn: () => getGenres(),
+  });
+
+  if (
+    isLoading ||
+    isError ||
+    !genres ||
+    !authors ||
+    isAuthorsError ||
+    isAuthorsLoading
+  ) {
     return <span>Loading...</span>;
   }
 
-  return (
-    <Table
-      modalTitle="Créer un livre"
-      onSubmitModal={(e): void => HandleSubmit(e)}
-      dataCreateForm={[
-        {
-          label: 'Title',
-          name: 'name',
-          type: 'text',
-        },
-        {
-          label: 'Author',
-          name: 'authorId',
-          type: 'select',
-          options: authors.map((author: Author) => ({
-            value: author.id,
-            label: `${author.firstName} ${author.lastName}`,
-          })),
-        },
-        {
-          label: 'Date',
-          name: 'writtenOn',
-          type: 'number',
-        },
-        {
-          label: 'Genre',
-          name: 'genresId',
-          type: 'select',
-          multiple: true,
-          //   selectOptions,
-          options: [
-            { value: '1', label: 'Science Fiction' },
-            { value: '2', label: 'Science Fiction' },
-            { value: '3', label: 'Science Fiction' },
-            { value: '4', label: 'Science Fiction' },
-            { value: '5', label: 'Science Fiction' },
-            { value: '6', label: 'Science Fiction' },
-            { value: '7', label: 'Science Fiction' },
-            { value: '8', label: 'Science Fiction' },
-          ],
-        },
-      ]}
-      data={data as Data[]}
-    />
-  );
+  const genreOptions = genres.map((genre: Genre) => ({
+    label: genre.name,
+    value: genre.id,
+  }));
+  if (isAdding) {
+    return (
+      <Table
+        title={title}
+        pathname="/books/"
+        modalTitle="Créer un livre"
+        onSubmitModal={(e): void => HandleSubmit(e)}
+        dataCreateForm={[
+          {
+            label: 'Title',
+            name: 'name',
+            type: 'text',
+          },
+          {
+            label: 'Author',
+            name: 'authorId',
+            type: 'select',
+            options: authors.map((author: Author) => ({
+              value: author.id,
+              label: `${author.firstName} ${author.lastName}`,
+            })),
+          },
+          {
+            label: 'Date',
+            name: 'writtenOn',
+            type: 'number',
+          },
+          {
+            label: 'Genre',
+            name: 'genresId',
+            type: 'select',
+            multiple: true,
+            //   selectOptions,
+            options: genreOptions,
+          },
+        ]}
+        data={data as Data[]}
+      />
+    );
+  }
+  return <Table title={title} data={data as Data[]} pathname="/books" />;
 }
+BooksTable.defaultProps = {
+  isAdding: true,
+  title: undefined,
+};

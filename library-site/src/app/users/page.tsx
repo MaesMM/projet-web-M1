@@ -1,107 +1,94 @@
+/* eslint-disable operator-linebreak */
 /* eslint-disable function-paren-newline */
 /* eslint-disable implicit-arrow-linebreak */
 
 'use client';
 
 import { FC, ReactElement, useState } from 'react';
-import Table from '@/component/table';
-import Sorter from '@/component/interaction/sorter';
+import { useQuery } from 'react-query';
+import { User } from '@/models';
+import { getUsers } from '@/requests/users';
+import UsersSorter from '@/component/interaction/sorter/usersSorteer';
+import UsersTable from '@/component/table/usersTable';
 
 type Data = {
   href: string;
   data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
 };
-const users = [
-  {
-    id: '1',
-    username: 'Antoinne Maes',
-    books: [
-      {
-        id: '1',
-        name: 'Hello',
-        writtenOn: 2025,
-        genres: ['Science fiction, action, amour'],
-        author: {
-          id: '1',
-          firstName: 'Antoine',
-          lastName: 'Monteil',
-        },
-      },
-    ],
-  },
-  {
-    id: '2',
-    username: 'Antone Maes',
-    books: [
-      {
-        id: '1',
-        name: 'Hello',
-        writtenOn: 2025,
-        genres: ['Science fiction, action, amour'],
-        author: {
-          id: '1',
-          firstName: 'Antoine',
-          lastName: 'Monteil',
-        },
-      },
-      {
-        id: '1',
-        name: 'Hello',
-        writtenOn: 2025,
-        genres: ['Science fiction, action, amour'],
-        author: {
-          id: '1',
-          firstName: 'Antoine',
-          lastName: 'Monteil',
-        },
-      },
-    ],
-  },
-];
 
 const UsersPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
-  const [typeSort, setTypeSort] = useState('username');
+  const [typeFilter, setTypeFilter] = useState('all');
 
-  const filteredUsers = users.filter((user) =>
-    user.username.toLowerCase().includes(inputValue.toLowerCase()),
-  );
-
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (typeSort === 'username') {
-      return a.username.localeCompare(b.username);
-    }
-    if (typeSort === 'quantity') {
-      return a.books.length - b.books.length;
-    }
-
-    return 0;
+  const {
+    data: users,
+    isLoading: isLoadingUsers,
+    isError: isErrorUsers,
+  } = useQuery<User[]>({
+    queryKey: ['users'],
+    queryFn: () => getUsers(),
   });
 
-  const data = sortedUsers.map((user) => ({
+  if (isErrorUsers || isLoadingUsers || !users) {
+    return <span>Loading...</span>;
+  }
+
+  //   const filteredUsers = users.filter(
+  //     (user) =>
+  //       user.firstName.toLowerCase().includes(inputValue.toLowerCase()) ||
+  //       user.lastName.toLowerCase().includes(inputValue.toLowerCase()),
+  //   );
+
+  const filteredUsers = users.filter((user: User) => {
+    const lowerCaseInput = inputValue.toLowerCase();
+    const isMatchingFirstName = user.firstName
+      .toLowerCase()
+      .includes(lowerCaseInput);
+
+    const isMatchingLastName = user.lastName
+      .toLowerCase()
+      .includes(lowerCaseInput);
+
+    if (typeFilter !== 'all') {
+      return (
+        (isMatchingFirstName || isMatchingLastName) &&
+        user.userBook.some(
+          (book) =>
+            book.id && book.id.toLowerCase() === typeFilter.toLowerCase(),
+        )
+      );
+    }
+
+    return isMatchingFirstName || isMatchingLastName;
+  });
+
+  const data = filteredUsers.map((user) => ({
     href: user.id,
     data: [
-      { label: 'Pseudonyme', value: user.username, size: 'md' },
-      {
-        label: 'Nombre de livre',
-        value: String(user.books.length),
-        size: 'md',
-      },
+      { label: 'Prénom', value: user.firstName, size: 'md' },
+      { label: 'Nom', value: user.lastName, size: 'md' },
     ],
   }));
   return (
     <div className="flex flex-col gap-8">
-      <Sorter
-        options={[
-          { label: 'Nombre de livre', value: 'quantity' },
-          { label: 'Pseudonyme', value: 'username' },
-        ]}
+      <UsersSorter
         setInputValue={setInputValue}
-        setTypeSort={setTypeSort}
+        setTypeFilter={setTypeFilter}
       />
-      <Table data={data as Data[]} modalTitle="Créer un utilisateur" />
+      <UsersTable data={data as Data[]} />
     </div>
   );
 };
 
 export default UsersPage;
+
+//   const sortedUsers = [...filteredUsers].sort((a, b) => {
+//     if (typeSort === 'username') {
+//       return a.username.localeCompare(b.username);
+//     }
+//     if (typeSort === 'quantity') {
+//       return a.books.length - b.books.length;
+//     }
+
+//     return 0;
+//   });

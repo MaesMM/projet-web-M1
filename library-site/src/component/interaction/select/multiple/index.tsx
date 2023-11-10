@@ -2,17 +2,17 @@ import { nanoid } from 'nanoid';
 import React, { useState } from 'react';
 
 type Props = {
-  defaultValue?: string | number;
+  defaultValues?: string[];
   name: string;
   options?: { value: string; label: string }[];
 };
 export default function SelectMultiple({
   name,
-  defaultValue,
+  defaultValues,
   options,
 }: Props): React.ReactElement {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
-    defaultValue ? [defaultValue.toString()] : [],
+    defaultValues || [],
   );
 
   const handleSelectChange = (
@@ -53,6 +53,6 @@ export default function SelectMultiple({
 }
 
 SelectMultiple.defaultProps = {
-  defaultValue: undefined,
+  defaultValues: undefined,
   options: undefined,
 };

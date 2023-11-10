@@ -42,14 +42,16 @@ const Table = ({
           key={nanoid()}
         />
       ))}
-      <button
-        type="button"
-        onClick={(): void => setModalVisible(true)}
-        className="w-full h-24 rounded-xl flex justify-center items-center px-4 py-2 border hover:bg-gray-200 border-solid border-gray-200"
-        aria-label="create new book"
-      >
-        <Add />
-      </button>
+      {modalTitle && onSubmitModal && dataCreateForm && (
+        <button
+          type="button"
+          onClick={(): void => setModalVisible(true)}
+          className="w-full h-24 rounded-xl flex justify-center items-center px-4 py-2 border hover:bg-gray-200 border-solid border-gray-200"
+          aria-label="create new book"
+        >
+          <Add />
+        </button>
+      )}
       {isModalVisible && modalTitle && onSubmitModal && dataCreateForm && (
         <Modal title={modalTitle} setModalVisible={setModalVisible}>
           <FormCreate
@@ -68,7 +70,7 @@ Table.defaultProps = {
   pathname: undefined,
   title: undefined,
   modalTitle: undefined,
-  onSubmitModal: (): void => undefined,
+  onSubmitModal: undefined,
   dataCreateForm: undefined,
 };
 

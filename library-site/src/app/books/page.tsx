@@ -9,6 +9,7 @@ import { Book } from '@/models';
 import { getBooks } from '@/requests/books';
 import BooksTable from '@/component/table/booksTable';
 import BooksSorter from '@/component/interaction/sorter/booksSorter';
+import FilterBySelect from '@/component/interaction/select/filterBy';
 
 type Data = {
   href: string;
@@ -18,6 +19,7 @@ type Data = {
 const BooksPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [order, setOrder] = useState('name');
 
   const {
     data: books,
@@ -35,17 +37,20 @@ const BooksPage: FC = (): ReactElement => {
   const filteredBooks = books.filter((book: Book) => {
     const lowerCaseInput = inputValue.toLowerCase();
     const isMatchingAuthor =
-      book.author.firstName.toLowerCase().includes(lowerCaseInput) ||
-      book.author.lastName.toLowerCase().includes(lowerCaseInput);
+      book.author &&
+      (book.author.firstName.toLowerCase().includes(lowerCaseInput) ||
+        book.author.lastName.toLowerCase().includes(lowerCaseInput));
     const isMatchingName = book.name.toLowerCase().includes(lowerCaseInput);
 
-    const isMatchingDate = book.writtenOn.toString().includes(lowerCaseInput);
+    const isMatchingDate =
+      book.writtenOn && book.writtenOn.toString().includes(lowerCaseInput);
 
     if (typeFilter !== 'all') {
       return (
         (isMatchingAuthor || isMatchingName || isMatchingDate) &&
         book.genres.some(
-          (genre) => genre.id.toLowerCase() === typeFilter.toLowerCase(),
+          (genre) =>
+            genre.id && genre.id.toLowerCase() === typeFilter.toLowerCase(),
         )
       );
     }
@@ -53,19 +58,41 @@ const BooksPage: FC = (): ReactElement => {
     return isMatchingAuthor || isMatchingName || isMatchingDate;
   });
 
-  const data = filteredBooks.map((book: Book) => ({
+  const sortedUsers = [...filteredBooks].sort((a, b) => {
+    if (order === 'name') {
+      return a.name.localeCompare(b.name);
+    }
+    if (order === 'date') {
+      return a.writtenOn - b.writtenOn;
+    }
+    if (order === 'lastName') {
+      return ((a.author && a.author.lastName) || '').localeCompare(
+        (b.author && b.author.lastName) || '',
+      );
+    }
+    if (order === 'firstName') {
+      return ((a.author && a.author.firstName) || '').localeCompare(
+        (b.author && b.author.firstName) || '',
+      );
+    }
+
+    return 0;
+  });
+
+  const data = sortedUsers.map((book: Book) => ({
     href: book.id,
     data: [
       { label: 'Titre', value: book.name, size: 'lg' },
       { label: 'Date', value: String(book.writtenOn), size: 'md' },
       {
         label: 'Genres',
-        value: book.genres.map((genre) => genre.name).join(', '),
+        value: book.genres && book.genres.map((genre) => genre.name).join(', '),
         size: 'lg',
       },
       {
         label: 'Auteur',
-        value: `${book.author.firstName} ${book.author.lastName}`,
+        value:
+          book.author && `${book.author.firstName} ${book.author.lastName}`,
         size: 'md',
       },
     ],
@@ -77,6 +104,18 @@ const BooksPage: FC = (): ReactElement => {
         setInputValue={setInputValue}
         setTypeFilter={setTypeFilter}
       />
+      <div className="flex justify-end">
+        <FilterBySelect
+          label="Trier par"
+          options={[
+            { label: 'Titre', value: 'name' },
+            { label: 'Date', value: 'date' },
+            { label: 'Nom', value: 'lastName' },
+            { label: 'Prénom', value: 'firstName' },
+          ]}
+          onChange={(e): void => setOrder(e)}
+        />
+      </div>
       <BooksTable data={data as Data[]} />
     </div>
   );

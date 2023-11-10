@@ -1,99 +1,135 @@
+/* eslint-disable operator-linebreak */
+
 'use client';
 
-import { useParams } from 'next/navigation';
-import { FC } from 'react';
-import { nanoid } from 'nanoid';
+import { useParams, useRouter } from 'next/navigation';
+import { FC, useState } from 'react';
+import { useQuery } from 'react-query';
 import Container from '@/component/container';
 import ListItem from '@/component/listItem';
+import { Book, User } from '@/models';
+import { getUserByID } from '@/requests/users';
+import Modal from '@/component/modal';
+import Confirmation from '@/component/interaction/confirmation';
+import FormUpdateUsers from '@/component/form/formUpdate/formUpdateUsers';
+import BooksTable from '@/component/table/booksTable';
 import Row from '@/component/row';
-import Button from '@/component/interaction/button';
-import Delete from '../../../../public/Delete.svg';
-import Edit from '../../../../public/Edit.svg';
 
-const user = {
-  id: '1',
-  username: 'Antoine Maes',
-  books: [
-    {
-      id: '1',
-      name: 'Hello',
-      writtenOn: 2025,
-      author: {
-        firstName: 'Antoine',
-        lastName: 'Monteil',
-      },
-      genres: ['Science fiction'],
-    },
-    {
-      id: '1',
-      name: 'Hello',
-      writtenOn: 2025,
-      author: {
-        firstName: 'Antoine',
-        lastName: 'Monteil',
-      },
-      genres: ['Science fiction, action, amour'],
-    },
-  ],
+type Data = {
+  href: string;
+  data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
 };
 
 const BooksDetailsPage: FC = () => {
+  const [isModifying, setIsModifying] = useState(false);
+  const [isModalDisplayed, setIsModalDisplayed] = useState(false);
+  const router = useRouter();
+
   const { id } = useParams();
-  console.log(id);
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useQuery<User>({
+    queryKey: ['user', id as string],
+    queryFn: () => getUserByID(id as string),
+    enabled: !!id,
+  });
+
+  if (isUserLoading || isUserError || !user) {
+    return <span>Loading...</span>;
+  }
+
+  const userBooks = user.userBook.map((book: Book) => ({
+    href: book.id,
+    data: [
+      { label: 'Titre', value: book.name, size: 'lg' },
+      { label: 'Date', value: String(book.writtenOn), size: 'md' },
+      {
+        label: 'Genres',
+        value: book.genres && book.genres.map((genre) => genre.name).join(', '),
+        size: 'lg',
+      },
+      {
+        label: 'Auteur',
+        value:
+          book.author && `${book.author.firstName} ${book.author.lastName}`,
+        size: 'md',
+      },
+    ],
+  }));
+
+  const favoriteBook = {
+    href: user.favoriteBook.id,
+    data: [
+      { label: 'Titre', value: user.favoriteBook.name, size: 'lg' },
+      { label: 'Date', value: String(user.favoriteBook.writtenOn), size: 'md' },
+      {
+        label: 'Genres',
+        value:
+          user.favoriteBook.genres &&
+          user.favoriteBook.genres.map((genre) => genre.name).join(', '),
+        size: 'lg',
+      },
+      {
+        label: 'Auteur',
+        value:
+          user.favoriteBook.author &&
+          `${user.favoriteBook.author.firstName} ${user.favoriteBook.author.lastName}`,
+        size: 'md',
+      },
+    ],
+  };
 
   return (
     <div className="flex flex-col gap-8">
-      <Container className="flex flex-col gap-4">
-        <div className="flex justify-between items-center w-full">
-          <span className="text-xl font-medium">Information Generales</span>
-          <div className="flex">
-            <Button
-              icon={Edit}
-              className="text-white-500 hover:text-white-600"
-            />
-            <Button
-              icon={Delete}
-              className="hover:bg-red-500 text-white-500 hover:text-white-600"
-            />
+      <Container
+        className="flex flex-col gap-4"
+        title="Informations générales"
+        onClickDelete={(): void => setIsModalDisplayed(true)}
+        onClickEdit={(): void => setIsModifying(!isModifying)}
+      >
+        {isModifying ? (
+          <FormUpdateUsers setIsModifying={setIsModifying} user={user} />
+        ) : (
+          <div className="flex flex-col gap-4">
+            <ListItem title="Prénom">{user.firstName}</ListItem>
+            <ListItem title="Nom">{user.lastName}</ListItem>
           </div>
-        </div>
-        <ListItem title="Pseudonyme">{user.username}</ListItem>
-        <div className="flex gap-4 justify-end">
-          <Button className="text-sm" text="Annuler" />
-          <Button
-            className="bg-emerald-500 hover:bg-emerald-600 text-sm"
-            text="Confirmer"
-          />
-        </div>
+        )}
       </Container>
-      <Container className="flex flex-col gap-4">
-        <div className="flex justify-between items-center w-full">
-          <span className="text-xl font-medium">Livres</span>
-          <div className="flex">
-            <Button
-              icon={Edit}
-              className="text-white-500 hover:text-white-600"
-            />
-            <Button
-              icon={Delete}
-              className="hover:bg-red-500 text-white-500 hover:text-white-600"
-            />
-          </div>
-        </div>
-        {user.books.map((book) => (
+      {!isModifying && user.favoriteBook && (
+        <Container className="flex flex-col gap-4" title="Livre favoris">
           <Row
-            key={nanoid()}
-            data={[
-              { label: 'Titre', value: book.name },
-              {
-                label: 'Auteur',
-                value: `${book.author.firstName} ${book.author.lastName}`,
-              },
-              { label: 'Date', value: book.writtenOn as unknown as string },
-            ]}
+            onClick={(): void => router.push(`books/${favoriteBook.href}`)}
+            data={favoriteBook.data as Data['data']}
           />
-        ))}
-      </Container>
+        </Container>
+      )}
+
+      {!isModifying && (
+        <BooksTable
+          isAdding={false}
+          title="Livre ajoutés"
+          data={userBooks as Data[]}
+        />
+      )}
+      {isModalDisplayed && (
+        <Modal
+          setModalVisible={setIsModalDisplayed}
+          title="Voulez vous supprimer ce livre ?"
+        >
+          <Confirmation
+            onCancel={(): void => {
+              setIsModalDisplayed(false);
+            }}
+            onConfirm={(): void => {
+              setIsModalDisplayed(false);
+              //   booksMutation.mutate();
+            }}
+          />
+        </Modal>
+      )}
     </div>
   );
 };

@@ -35,17 +35,20 @@ const BooksPage: FC = (): ReactElement => {
   const filteredBooks = books.filter((book: Book) => {
     const lowerCaseInput = inputValue.toLowerCase();
     const isMatchingAuthor =
-      book.author.firstName.toLowerCase().includes(lowerCaseInput) ||
-      book.author.lastName.toLowerCase().includes(lowerCaseInput);
+      book.author &&
+      (book.author.firstName.toLowerCase().includes(lowerCaseInput) ||
+        book.author.lastName.toLowerCase().includes(lowerCaseInput));
     const isMatchingName = book.name.toLowerCase().includes(lowerCaseInput);
 
-    const isMatchingDate = book.writtenOn.toString().includes(lowerCaseInput);
+    const isMatchingDate =
+      book.writtenOn && book.writtenOn.toString().includes(lowerCaseInput);
 
     if (typeFilter !== 'all') {
       return (
         (isMatchingAuthor || isMatchingName || isMatchingDate) &&
         book.genres.some(
-          (genre) => genre.id.toLowerCase() === typeFilter.toLowerCase(),
+          (genre) =>
+            genre.id && genre.id.toLowerCase() === typeFilter.toLowerCase(),
         )
       );
     }
@@ -60,12 +63,13 @@ const BooksPage: FC = (): ReactElement => {
       { label: 'Date', value: String(book.writtenOn), size: 'md' },
       {
         label: 'Genres',
-        value: book.genres.map((genre) => genre.name).join(', '),
+        value: book.genres && book.genres.map((genre) => genre.name).join(', '),
         size: 'lg',
       },
       {
         label: 'Auteur',
-        value: `${book.author.firstName} ${book.author.lastName}`,
+        value:
+          book.author && `${book.author.firstName} ${book.author.lastName}`,
         size: 'md',
       },
     ],

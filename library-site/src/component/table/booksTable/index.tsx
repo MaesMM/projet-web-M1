@@ -1,9 +1,11 @@
+/* eslint-disable operator-linebreak */
 import React, { ReactElement } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import Table from '..';
-import { Author, CreateBook } from '@/models';
+import { Author, CreateBook, Genre } from '@/models';
 import { getAuthors } from '@/requests/authors';
 import { createBook } from '@/requests/books';
+import { getGenres } from '@/requests/genre';
 
 type Data = {
   href: string;
@@ -47,12 +49,35 @@ export default function BooksTable({ data }: Props): ReactElement {
     queryKey: ['authors'],
     queryFn: () => getAuthors(),
   });
-  if (!authors || isAuthorsError || isAuthorsLoading) {
+
+  const {
+    data: genres,
+    isLoading,
+    isError,
+  } = useQuery<Genre[]>({
+    queryKey: ['genres'],
+    queryFn: () => getGenres(),
+  });
+
+  if (
+    isLoading ||
+    isError ||
+    !genres ||
+    !authors ||
+    isAuthorsError ||
+    isAuthorsLoading
+  ) {
     return <span>Loading...</span>;
   }
 
+  const genreOptions = genres.map((genre: Genre) => ({
+    label: genre.name,
+    value: genre.id,
+  }));
+
   return (
     <Table
+      pathname="/books/"
       modalTitle="Créer un livre"
       onSubmitModal={(e): void => HandleSubmit(e)}
       dataCreateForm={[
@@ -81,16 +106,7 @@ export default function BooksTable({ data }: Props): ReactElement {
           type: 'select',
           multiple: true,
           //   selectOptions,
-          options: [
-            { value: '1', label: 'Science Fiction' },
-            { value: '2', label: 'Science Fiction' },
-            { value: '3', label: 'Science Fiction' },
-            { value: '4', label: 'Science Fiction' },
-            { value: '5', label: 'Science Fiction' },
-            { value: '6', label: 'Science Fiction' },
-            { value: '7', label: 'Science Fiction' },
-            { value: '8', label: 'Science Fiction' },
-          ],
+          options: genreOptions,
         },
       ]}
       data={data as Data[]}

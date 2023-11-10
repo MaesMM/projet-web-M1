@@ -52,7 +52,7 @@ const AuthorDetailsPage: FC = () => {
 
   const data = author.books.map(
     (book: { id: string; name: string; writtenOn: number }) => ({
-      href: book.id,
+      href: `${book.id}`,
       data: [
         { label: 'Titre', value: book.name, size: 'lg' },
         { label: 'Date', value: String(book.writtenOn), size: 'md' },

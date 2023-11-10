@@ -1,15 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { AuthorId, Book } from 'library-api/src/entities';
 import { PlainAuthorModel, AuthorModel } from 'library-api/src/models';
 
 export class PlainAuthorPresenter {
-  @ApiProperty({ type: String, format: 'uuid' })
   id: AuthorId;
 
-  @ApiProperty({ type: String })
   firstName: string;
 
-  @ApiProperty({ type: String })
   lastName: string;
 
   private constructor(data: PlainAuthorPresenter) {
@@ -26,22 +22,14 @@ export class PlainAuthorPresenter {
 }
 
 export class AuthorPresenter {
-  @ApiProperty({ type: String, format: 'uuid' })
   id: string;
 
-  @ApiProperty({ type: String })
   firstName: string;
 
-  @ApiProperty({ type: String })
   lastName: string;
 
-  @ApiProperty({ type: String })
   photoUrl?: string;
 
-  @ApiProperty({
-    description: 'List the books of the author',
-    type: [String],
-  })
   books: Book[];
 
   private constructor(data: AuthorPresenter) {

@@ -8,7 +8,7 @@
     "api:start": "nest start",
     "api:start:dev": "cd library-api && nest start --watch",
     "api:lint": "eslint \"library-api/**/*.ts\" --fix",
-    "api:test": "jest",
+    "api:test": "jest --watchAll --config jest.config.json",
     "site:dev": "cd library-site && next dev",
     "site:build": "cd library-site && next build",
     "site:start": "cd library-site && next start",
@@ -67,23 +67,6 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "library-api/src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   },
   "repository": {
     "type": "git",

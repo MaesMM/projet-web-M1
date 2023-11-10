@@ -43,13 +43,12 @@ export class BookRepository extends Repository<Book> {
   public async getById(id: BookId): Promise<BookRepositoryOutput> {
     const book = await this.findOne({
       where: { id },
-      relations: { bookGenres: { genre: true }, author: true },
+      relations: { bookGenres: { genre: true }, author: true, userBook : {user: true} },
     });
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
     }
-
     return adaptBookEntityToBookModel(book);
   }
 

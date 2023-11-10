@@ -190,15 +190,4 @@ export class BookRepository extends Repository<Book> {
     return book;
   }
 
-  public async getByIdTypeBook(id: BookId): Promise<Book> {
-    const book = await this.findOne({
-      where: { id },
-      relations: { bookGenres: { genre: true }, author: true },
-    });
-    if (!book) {
-      throw new NotFoundError(`Book - '${id}'`);
-    }
-
-    return book;
-  }
 }

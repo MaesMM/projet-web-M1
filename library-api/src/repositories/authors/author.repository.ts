@@ -7,6 +7,7 @@ import {
   PlainAuthorRepositoryOutput,
 } from './author.repository.type';
 import { adaptAuthorEntityToAuthorModel } from './author.utils';
+import { PlainAuthorModel } from 'library-api/src/models';
 
 @Injectable()
 export class AuthorRepository extends Repository<Author> {
@@ -45,4 +46,14 @@ export class AuthorRepository extends Repository<Author> {
     }
     return author;
   }
+
+  public async updatePlain(id: AuthorId, bodyContent: PlainAuthorModel): Promise<PlainAuthorModel> {
+    const author = await this.getByIdTypeAuthor(id);
+    author.firstName = bodyContent.firstName;
+    author.lastName = bodyContent.lastName;
+    await this.save(author);
+    return author;
+  }
+
+
 }

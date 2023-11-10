@@ -77,7 +77,7 @@ const AuthorDetailsPage: FC = () => {
           </div>
         )}
       </Container>
-      <BooksTable data={data as Data[]} />
+      <BooksTable title="Livres ecris par l'auteur" data={data as Data[]} />
       {isModalDisplayed && (
         <Modal
           setModalVisible={setIsModalDisplayed}

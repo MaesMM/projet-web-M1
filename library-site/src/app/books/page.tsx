@@ -9,6 +9,7 @@ import { Book } from '@/models';
 import { getBooks } from '@/requests/books';
 import BooksTable from '@/component/table/booksTable';
 import BooksSorter from '@/component/interaction/sorter/booksSorter';
+import FilterBySelect from '@/component/interaction/select/filterBy';
 
 type Data = {
   href: string;
@@ -18,6 +19,7 @@ type Data = {
 const BooksPage: FC = (): ReactElement => {
   const [inputValue, setInputValue] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [order, setOrder] = useState('name');
 
   const {
     data: books,
@@ -56,7 +58,28 @@ const BooksPage: FC = (): ReactElement => {
     return isMatchingAuthor || isMatchingName || isMatchingDate;
   });
 
-  const data = filteredBooks.map((book: Book) => ({
+  const sortedUsers = [...filteredBooks].sort((a, b) => {
+    if (order === 'name') {
+      return a.name.localeCompare(b.name);
+    }
+    if (order === 'date') {
+      return a.writtenOn - b.writtenOn;
+    }
+    if (order === 'lastName') {
+      return ((a.author && a.author.lastName) || '').localeCompare(
+        (b.author && b.author.lastName) || '',
+      );
+    }
+    if (order === 'firstName') {
+      return ((a.author && a.author.firstName) || '').localeCompare(
+        (b.author && b.author.firstName) || '',
+      );
+    }
+
+    return 0;
+  });
+
+  const data = sortedUsers.map((book: Book) => ({
     href: book.id,
     data: [
       { label: 'Titre', value: book.name, size: 'lg' },
@@ -81,6 +104,18 @@ const BooksPage: FC = (): ReactElement => {
         setInputValue={setInputValue}
         setTypeFilter={setTypeFilter}
       />
+      <div className="flex justify-end">
+        <FilterBySelect
+          label="Trier par"
+          options={[
+            { label: 'Titre', value: 'name' },
+            { label: 'Date', value: 'date' },
+            { label: 'Nom', value: 'lastName' },
+            { label: 'Prénom', value: 'firstName' },
+          ]}
+          onChange={(e): void => setOrder(e)}
+        />
+      </div>
       <BooksTable data={data as Data[]} />
     </div>
   );

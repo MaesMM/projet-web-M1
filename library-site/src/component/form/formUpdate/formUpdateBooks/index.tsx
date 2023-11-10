@@ -4,9 +4,10 @@
 import React, { FormEvent } from 'react';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import FormUpdate from '..';
-import { Author, Book, CreateBook } from '@/models';
+import { Author, Book, CreateBook, Genre } from '@/models';
 import { getAuthors } from '@/requests/authors';
 import { updateBook } from '@/requests/books';
+import { getGenres } from '@/requests/genres';
 
 type Props = {
   setIsModifying: (value: boolean) => void;
@@ -55,9 +56,31 @@ export default function FormUpdateBooks({
     queryFn: () => getAuthors(),
   });
 
-  if (isAuthorsError || isAuthorsLoading || !authors) {
+  const {
+    data: genres,
+    isLoading,
+    isError,
+  } = useQuery<Genre[]>({
+    queryKey: ['genres'],
+    queryFn: () => getGenres(),
+  });
+
+  if (
+    isAuthorsError ||
+    isAuthorsLoading ||
+    !authors ||
+    isLoading ||
+    isError ||
+    !genres
+  ) {
     return <span>Loading...</span>;
   }
+
+  const genreOptions = genres.map((genre: Genre) => ({
+    label: genre.name,
+    value: genre.id,
+  }));
+
   return (
     <FormUpdate
       onSubmit={handleSubmitForm}
@@ -91,10 +114,7 @@ export default function FormUpdateBooks({
           type: 'select',
           multiple: true,
           defaultValues: book.genres.map((genre) => genre.id),
-          options: [
-            { value: '1', label: 'test' },
-            { value: '2', label: 'test' },
-          ],
+          options: genreOptions,
         },
       ]}
     />

@@ -5,17 +5,23 @@ import Table from '..';
 import { Author, CreateBook, Genre } from '@/models';
 import { getAuthors } from '@/requests/authors';
 import { createBook } from '@/requests/books';
-import { getGenres } from '@/requests/genre';
+import { getGenres } from '@/requests/genres';
 
 type Data = {
   href: string;
   data: { label: string; value: string; size: 'lg' | 'md' | 'xl' }[];
 };
 type Props = {
+  isAdding?: boolean;
   data: Data[];
+  title?: string;
 };
 
-export default function BooksTable({ data }: Props): ReactElement {
+export default function BooksTable({
+  data,
+  isAdding,
+  title,
+}: Props): ReactElement {
   const queryClient = useQueryClient();
 
   const createBookMutation = useMutation({
@@ -74,42 +80,49 @@ export default function BooksTable({ data }: Props): ReactElement {
     label: genre.name,
     value: genre.id,
   }));
-
-  return (
-    <Table
-      pathname="/books/"
-      modalTitle="Créer un livre"
-      onSubmitModal={(e): void => HandleSubmit(e)}
-      dataCreateForm={[
-        {
-          label: 'Title',
-          name: 'name',
-          type: 'text',
-        },
-        {
-          label: 'Author',
-          name: 'authorId',
-          type: 'select',
-          options: authors.map((author: Author) => ({
-            value: author.id,
-            label: `${author.firstName} ${author.lastName}`,
-          })),
-        },
-        {
-          label: 'Date',
-          name: 'writtenOn',
-          type: 'number',
-        },
-        {
-          label: 'Genre',
-          name: 'genresId',
-          type: 'select',
-          multiple: true,
-          //   selectOptions,
-          options: genreOptions,
-        },
-      ]}
-      data={data as Data[]}
-    />
-  );
+  if (isAdding) {
+    return (
+      <Table
+        title={title}
+        pathname="/books/"
+        modalTitle="Créer un livre"
+        onSubmitModal={(e): void => HandleSubmit(e)}
+        dataCreateForm={[
+          {
+            label: 'Title',
+            name: 'name',
+            type: 'text',
+          },
+          {
+            label: 'Author',
+            name: 'authorId',
+            type: 'select',
+            options: authors.map((author: Author) => ({
+              value: author.id,
+              label: `${author.firstName} ${author.lastName}`,
+            })),
+          },
+          {
+            label: 'Date',
+            name: 'writtenOn',
+            type: 'number',
+          },
+          {
+            label: 'Genre',
+            name: 'genresId',
+            type: 'select',
+            multiple: true,
+            //   selectOptions,
+            options: genreOptions,
+          },
+        ]}
+        data={data as Data[]}
+      />
+    );
+  }
+  return <Table title={title} data={data as Data[]} pathname="/books" />;
 }
+BooksTable.defaultProps = {
+  isAdding: true,
+  title: undefined,
+};

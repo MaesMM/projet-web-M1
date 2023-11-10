@@ -47,7 +47,6 @@ export class AuthorRepository extends Repository<Author> {
     return author;
   }
 
-
   public async updatePlain(id: AuthorId, bodyContent: PlainAuthorModel): Promise<PlainAuthorModel> {
     const author = await this.getByIdTypeAuthor(id);
     author.firstName = bodyContent.firstName;
@@ -55,5 +54,6 @@ export class AuthorRepository extends Repository<Author> {
     await this.save(author);
     return author;
   }
+
 
 }

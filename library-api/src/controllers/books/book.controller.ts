@@ -104,18 +104,18 @@ export class BookController {
     //   genreId.push(genre.id);
     // }
 
-    // await Promise.all(
-    //   bodyContent.genres.map(async (genre) => {
-    //     const existingGenre = await this.genreUseCases.getById(
-    //       genre as GenreId,
-    //     );
-    //     if (!existingGenre) {
-    //       throw new NotFoundError(`Genre - '${genre}'`);
-    //     }
-    //     constGenres = GenreModel.push(constGenres, existingGenre);
-    //     genreId.push(existingGenre.id);
-    //   }),
-    // );
+    await Promise.all(
+      bodyContent.genres.map(async (genre) => {
+        const existingGenre = await this.genreUseCases.getById(
+          genre as GenreId,
+        );
+        if (!existingGenre) {
+          throw new NotFoundError(`Genre - '${genre}'`);
+        }
+        constGenres = GenreModel.push(constGenres, existingGenre);
+        genreId.push(existingGenre.id);
+      }),
+    );
 
     const updateBook: {
       name: string;

@@ -1,3 +1,4 @@
+import { CreateAuthor } from './../../../../library-site/src/models/author.model';
 import {
   AuthorModel,
   PlainAuthorModel,
@@ -5,3 +6,4 @@ import {
 
 export type PlainAuthorRepositoryOutput = PlainAuthorModel;
 export type AuthorRepositoryOutput = AuthorModel;
+export type CreateAuthorRepositoryInput = AuthorModel;

@@ -6,7 +6,7 @@ import {
   PlainUserRepositoryOutput,
 } from 'library-api/src/repositories/users/user.repository.type';
 import {
-  // adaptUserEntityToUserModel,
+  adaptUserEntityToUserModel,
   adaptUserEntityToPlainUserModel,
 } from 'library-api/src/repositories/users/user.utils';
 import { Repository, DataSource } from 'typeorm';
@@ -22,16 +22,16 @@ export class UserRepository extends Repository<User> {
     return users.map(adaptUserEntityToPlainUserModel);
   }
 
-  // public async getById(id: UserId): Promise<UserRepositoryOutput> {
-  //   const user = await this.findOne({
-  //     where: { id },
-  //     relations: { userBook: { book: true } },
-  //   });
+  public async getById(id: UserId): Promise<UserRepositoryOutput> {
+  const user = await this.findOne({
+    where: { id },
+    relations: ['userBook', 'favoriteBook', 'userBook.book'],
+  });
 
-  //   if (!user) {
-  //     throw new NotFoundError(`User - '${id}'`);
-  //   }
+  if (!user) {
+    throw new NotFoundError(`User - '${id}'`);
+  }
 
-  //   return adaptUserEntityToUserModel(user);
-  // }
+  return adaptUserEntityToUserModel(user);
+}
 }

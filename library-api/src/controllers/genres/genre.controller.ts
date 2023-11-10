@@ -6,7 +6,6 @@ import { GenreId } from 'library-api/src/entities';
 import { stringToGenreId } from 'library-api/src/repositories/genres/genre.utils';
 
 @ApiTags('Genres')
-@ApiTags('Genres')
 @Controller('genres')
 export class GenreController {
   constructor(private readonly genreUseCases: GenreUseCases) {}

@@ -11,7 +11,7 @@ export class UserUseCases {
     return this.userRepostitory.getAllPlain();
   }
 
-  public async getById(id: UserId): Promise<UserUseCasesOutput> {
-    return this.userRepostitory.getById(id);
-  }
+//   public async getById(id: UserId): Promise<UserUseCasesOutput> {
+//     return this.userRepostitory.getById(id);
+//   }
 }

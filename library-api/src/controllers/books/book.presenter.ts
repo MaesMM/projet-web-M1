@@ -1,5 +1,5 @@
 import { PlainAuthorPresenter } from 'library-api/src/controllers/authors/author.presenter';
-// import { GenrePresenter } from 'library-api/src/controllers/genres/genre.presenter';
+import { GenrePresenter } from 'library-api/src/controllers/genres/genre.presenter';
 import { BookId } from 'library-api/src/entities';
 import {
   BookModel,

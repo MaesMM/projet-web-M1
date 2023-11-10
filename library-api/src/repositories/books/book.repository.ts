@@ -22,6 +22,7 @@ import {
   adaptBookEntityToPlainBookModel,
   adaptBookToRepositoryOutput,
   adaptPlainBookModelToBookEntity,
+  convertToGenreId,
 } from 'library-api/src/repositories/books/book.utils';
 import { DataSource, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,7 +33,7 @@ export class BookRepository extends Repository<Book> {
     super(Book, dataSource.createEntityManager());
   }
 
-  /**
+   /**
    * Get all plain books
    * @returns Array of plain books
    */
@@ -41,7 +42,7 @@ export class BookRepository extends Repository<Book> {
       relations: { bookGenres: { genre: true }, author: true },
     });
 
-    return books.map(adaptBookEntityToBookModel);
+    return books.map((book) => adaptBookEntityToBookModel(book));
   }
 
   /**
@@ -55,6 +56,7 @@ export class BookRepository extends Repository<Book> {
       where: { id },
       relations: { bookGenres: { genre: true }, author: true },
     });
+
 
     if (!book) {
       throw new NotFoundError(`Book - '${id}'`);
@@ -82,65 +84,55 @@ export class BookRepository extends Repository<Book> {
 
   /**
    * Create a new book
-   * @param book
+   * @param book 
    * @throws 500: book was not created
    * @throws 404: author or genre with this ID was not found
-   * @returns
+   * @returns 
    */
-  public async createBook(
-    inputBook: CreateBookRepositoryInput,
-  ): Promise<BookRepositoryOutput> {
-    // gestion d'erreur si le livre existe déjà
-    const existingBook = await this.findOne({
-      where: { name: inputBook.name, author: inputBook.author },
-      relations: { bookGenres: { genre: true }, author: true },
-    });
-    console.log(existingBook);
+  public async createBook(inputBook: CreateBookRepositoryInput): Promise<BookRepositoryOutput> {
+     // gestion d'erreur si le livre existe déjà
+    const existingBook = await this.findOne({ where: { name :inputBook.name , author: inputBook.author }, relations: { bookGenres: { genre: true }, author: true }, });
     if (existingBook !== null) {
-      //th
-      throw new BadRequestException(
-        `Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`,
-      );
+      throw new  BadRequestException(`Book with name '${inputBook.name}' and author '${inputBook.author.lastName}' already exists`);
     }
-    const { name, writtenOn, author, genres } = inputBook;
+    const {name, writtenOn, author, genres} = inputBook;
 
-    const existingAuthor = await this.dataSource
-      .createEntityManager()
-      .findOne(Author, { where: { id: author.id } });
-
+    const existingAuthor = await this.dataSource.createEntityManager().findOne(Author, { where: { id: author.id } });
+    
     if (!existingAuthor) {
       throw new NotFoundError(`Author - '${author.id}'`);
     }
     let genreList = [];
     for (const singleGenre of genres) {
-      const existingGenre = await this.dataSource
-        .createEntityManager()
-        .findOne(Genre, { where: { name: singleGenre } });
-      genreList.push(existingGenre);
+      const existingGenre = await this.dataSource.createEntityManager().findOne(Genre, { where: { id : convertToGenreId(singleGenre) } });
+      genreList.push(existingGenre)
       if (!existingGenre) {
         throw new NotFoundError(`Genre - '${singleGenre}'`);
-      }
     }
-
-    const newBook = new Book();
-    newBook.id = uuidv4();
-    newBook.name = name;
-    newBook.writtenOn = writtenOn;
-    newBook.author = existingAuthor;
-
-    const existingGenre = genreList.map((genre) => {
-      const bookGenre = new BookGenre();
-      bookGenre.id = uuidv4();
-      bookGenre.book = newBook;
-      bookGenre.genre = genre;
-      return bookGenre;
-    });
-    newBook.bookGenres = existingGenre;
-
+  }
+  
+  const newBook = new Book();
+  newBook.id = uuidv4()
+  newBook.name = name
+  newBook.writtenOn =writtenOn
+  newBook.author= existingAuthor
+  
+  const existingGenre = genreList.map((genre) => {
+    const bookGenre = new BookGenre();
+    bookGenre.id = uuidv4();
+    bookGenre.book = newBook;
+    bookGenre.genre = genre;
+    return bookGenre;
+  });
+    newBook.bookGenres = existingGenre
+    
     await newBook.save();
     return adaptBookToRepositoryOutput(newBook);
-  }
+  } 
 
+
+
+    
   /**
    * Update a book
    * @param book Book's data
@@ -148,11 +140,10 @@ export class BookRepository extends Repository<Book> {
    * @throws 500: book was not updated
    * @throws 404: book with this ID was not found
    */
-  public async updateBook(
-    inputBook: UpdateBookRepositoryInput,
-  ): Promise<BookRepositoryOutput> {
+  public async updateBook(inputBook: UpdateBookRepositoryInput): Promise<BookRepositoryOutput> {
     return this.save(inputBook);
   }
+
 
   public async deleteBook(id: BookId): Promise<BookRepositoryOutput> {
     const book = await this.getById(id);

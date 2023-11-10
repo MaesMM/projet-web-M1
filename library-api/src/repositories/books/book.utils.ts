@@ -1,4 +1,4 @@
-import { Author, Book, BookGenre, Genre } from 'library-api/src/entities';
+import { Author, Book, BookGenre, Genre, GenreId } from 'library-api/src/entities';
 import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,
@@ -50,3 +50,15 @@ export const adaptBookToRepositoryOutput = (
   ...book,
   genres: book.bookGenres.map((bookGenre) => bookGenre.genre),
 });
+
+
+
+export function convertToGenreId(idString: string): GenreId {
+  const isUuid = /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/.test(idString);
+
+  if (!isUuid) {
+    throw new Error('Invalid GenreId format');
+  }
+
+  return idString as GenreId;
+}

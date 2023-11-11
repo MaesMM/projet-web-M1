@@ -8,6 +8,7 @@ import {
 } from './author.repository.type';
 import { adaptAuthorEntityToAuthorModel } from './author.utils';
 import { PlainAuthorModel } from 'library-api/src/models';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthorRepository extends Repository<Author> {
@@ -55,5 +56,23 @@ export class AuthorRepository extends Repository<Author> {
     return author;
   }
 
+  public async createPlain(bodyContent : {firstName : string, lastName : string}) : Promise<PlainAuthorModel>{
+    const author = new Author();
+    author.id = uuid();
+    author.firstName = bodyContent.firstName;
+    author.lastName = bodyContent.lastName;
+    author.photoUrl = '';
+    await this.save(author);
+    return author;
+  }
+
+  public async deleteAuthor(id: AuthorId): Promise<AuthorRepositoryOutput> {
+    const author = await this.getByIdTypeAuthor(id);
+    if (!author) {
+      throw new NotFoundError(`Author - '${id}'`);
+    }
+    await this.remove(author);
+    return author
+  }
 
 }

@@ -6,5 +6,6 @@ export type DataCreateForm = {
   type: 'select' | 'text' | 'number' | 'listInput';
   defaultValue?: string | number;
   defaultValues?: string[];
+  required? : boolean
   options?: { value: string; label: string }[];
 };

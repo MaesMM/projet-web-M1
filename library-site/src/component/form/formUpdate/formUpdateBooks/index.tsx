@@ -26,6 +26,7 @@ export default function FormUpdateBooks({
     onSuccess: () => {
       queryClient.invalidateQueries(['books']);
       queryClient.invalidateQueries(['book', book.id as string]);
+      setIsModifying(false);
     },
   });
 

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PlainUserModel, UserModel } from 'library-api/src/models';
-import { UserId } from 'library-api/src/entities';
+import { BookModel, PlainUserModel, UserModel, favoriteBookModel } from 'library-api/src/models';
+import { Book, BookId, UserId } from 'library-api/src/entities';
+import { PlainBookPresenter } from '../books/book.presenter';
 
 export class PlainUserPresenter {
   @ApiProperty({ type: String, format: 'uuid' })
@@ -16,13 +17,13 @@ export class PlainUserPresenter {
     description: 'List the favorite books of the user',
     type: [String],
   })
-  favoriteBook: string[];
+  favoriteBook: favoriteBookModel;
 
   @ApiProperty({
     description: 'List the books of the user',
     type: [String],
   })
-  userBook: string[];
+  userBook: BookId[];
 
   private constructor(data: PlainUserPresenter) {
     Object.assign(this, data);
@@ -33,15 +34,15 @@ export class PlainUserPresenter {
       id: data.id,
       firstName: data.firstName,
       lastName: data.lastName,
-      favoriteBook: data.favoriteBook,
-      userBook: data.userBook,
+      favoriteBook: data.favoriteBook ? data.favoriteBook : null,
+      userBook: data.userBook ? data.userBook : [],
     });
   }
 }
 
 export class UserPresenter {
   @ApiProperty({ type: String, format: 'uuid' })
-  id: string;
+  id: UserId;
 
   @ApiProperty({ type: String })
   firstName: string;
@@ -53,13 +54,13 @@ export class UserPresenter {
     description: 'List the favorite books of the user',
     type: [String],
   })
-  favoriteBook: string[];
+  favoriteBook: BookModel;
 
   @ApiProperty({
     description: 'List the books of the user',
     type: [String],
   })
-  userBook: string[];
+  userBook: BookModel[];
 
   private constructor(data: UserPresenter) {
     Object.assign(this, data);
@@ -70,8 +71,8 @@ export class UserPresenter {
       id: data.id,
       firstName: data.firstName,
       lastName: data.lastName,
-      favoriteBook: data.favoriteBook,
-      userBook: data.userBook,
+      favoriteBook: data.favoriteBook ? data.favoriteBook : null,
+      userBook: data.userBook ? data.userBook : [],      
     });
   }
 }

@@ -18,7 +18,7 @@ export default function UsersTable({ data }: Props): ReactElement {
 
   const createUsersMutation = useMutation({
     mutationFn: (user: CreateUser) => createUser(user),
-    onSuccess: () => queryClient.invalidateQueries(['Users']),
+    onSuccess: () => queryClient.invalidateQueries(['users']),
   });
 
   function HandleSubmit(e: React.FormEvent<HTMLFormElement>): void {

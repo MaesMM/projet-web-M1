@@ -39,7 +39,7 @@ export default function FormCreate({
             <SelectMultiple
               name={obj.name}
               options={obj.options}
-              defaultValue={obj.defaultValue}
+              defaultValues={obj.defaultValues}
             />
           )}
           {(obj.type === 'text' || obj.type === 'number') && (

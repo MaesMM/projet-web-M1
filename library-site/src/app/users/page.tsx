@@ -39,6 +39,8 @@ const UsersPage: FC = (): ReactElement => {
   //       user.lastName.toLowerCase().includes(inputValue.toLowerCase()),
   //   );
 
+  console.log(users)
+
   const filteredUsers = users.filter((user: User) => {
     const lowerCaseInput = inputValue.toLowerCase();
     const isMatchingFirstName = user.firstName

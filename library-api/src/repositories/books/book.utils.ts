@@ -4,20 +4,33 @@ import {
   BookRepositoryOutput,
   PlainBookRepositoryOutput,
 } from 'library-api/src/repositories/books/book.repository.type';
+import { adaptGenreEntityToGenreModel } from '../genres/genre.utils';
 
 export const adaptBookEntityToPlainBookModel = (
   book: Book,
-): PlainBookRepositoryOutput => ({
+): PlainBookRepositoryOutput =>{  return ({
   ...book,
   genres: book.bookGenres.map((bookGenre) => bookGenre.genre.name),
-});
+})};
+
 
 export const adaptBookEntityToBookModel = (
   book: Book,
-): BookRepositoryOutput => ({
-  ...book,
-  genres: book.bookGenres.map((bookGenre) => bookGenre.genre),
-});
+): BookRepositoryOutput => {
+  if (!book.bookGenres) {
+    return {
+      ...book,
+      genres: [],
+    };
+  }
+
+  return {
+    ...book,
+    genres: book.bookGenres.map((bookGenre) =>
+      adaptGenreEntityToGenreModel(bookGenre.genre),
+    ),
+  };
+};
 
 export const adaptPlainBookModelToBookEntity = (
   plainBookModel: PlainBookRepositoryOutput,
@@ -62,4 +75,9 @@ export function convertToGenreId(idString: string): GenreId {
   }
 
   return idString as GenreId;
+}
+
+
+export function pushBookModelToArray(books: BookModel[], newBook: BookModel): BookModel[] {
+  return [...books, { ...newBook }];
 }

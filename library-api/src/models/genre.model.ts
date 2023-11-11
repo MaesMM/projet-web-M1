@@ -1,15 +1,16 @@
 import { GenreId } from 'library-api/src/entities';
 
-export class GenreModel {
+export type GenreModel = {
   id: GenreId;
   name: string;
+};
 
-  private constructor(id: GenreId, name: string) {
-    this.id = id;
-    this.name = name;
-  }
+export type GenreListModel = GenreModel[];
 
-  static push(targetArray: GenreModel[], item: GenreModel): GenreModel[] {
-    return [...targetArray, item];
-  }
+export function createGenreModel(id: GenreId, name: string): GenreModel {
+  return { id, name };
+}
+
+export function pushGenreModel(targetArray: GenreListModel, item: GenreModel): GenreListModel {
+  return [...targetArray, item];
 }

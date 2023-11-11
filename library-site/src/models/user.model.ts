@@ -17,8 +17,8 @@ export type User = {
   id: string;
   firstName: string;
   lastName: string;
-  favoriteBook: Book;
-  userBook: Book[];
+  favoriteBook: {id : string, name : string, writtenOn : number};
+  userBook: Book[] | null[];
 };
 
 export type CreateUser = {
@@ -29,5 +29,5 @@ export type UpdateUser = {
   firstName: string;
   lastName: string;
   favoriteBook: string;
-  userBook: string[];
+  // userBook: string[];
 };

@@ -27,3 +27,10 @@ export type SBookModel = {
   author: Author;
   userBook: UserBook[];
 };
+
+
+export type favoriteBookModel = {
+  id: BookId;
+  name: string;
+  writtenOn: Date;
+}

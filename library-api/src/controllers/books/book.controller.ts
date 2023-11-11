@@ -22,7 +22,7 @@ import {
 import { CreateBookDto, UpdateBookDto } from './create-book.dto';
 import { CreateBookRepositoryInput } from 'library-api/src/repositories/books/book.repository.type';
 import { NotFoundError } from 'rxjs';
-import { GenreModel, PlainAuthorModel } from 'library-api/src/models';
+import { GenreModel, PlainAuthorModel, pushGenreModel } from 'library-api/src/models';
 @ApiTags('Books')
 @Controller('books')
 export class BookController {
@@ -112,7 +112,7 @@ export class BookController {
         if (!existingGenre) {
           throw new NotFoundError(`Genre - '${genre}'`);
         }
-        constGenres = GenreModel.push(constGenres, existingGenre);
+        constGenres = pushGenreModel(constGenres, existingGenre);
         genreId.push(existingGenre.id);
       }),
     );

@@ -28,29 +28,39 @@ export default function FormUpdateUsers({
 
   const updateAuthorMutation = useMutation({
     mutationFn: (updatedUser: UpdateUser) => updateUser(updatedUser, user.id),
-    onSuccess: () => queryClient.invalidateQueries(['user', user.id]),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['user', user.id]);
+      setIsModifying(false);
+    },
   });
 
   const handleSubmitForm = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const formValues = Object.fromEntries(formData.entries()) as {
-      [key: string]: string | string[];
+      [key: string]: string;
     };
-    const { firstName, lastName, favoriteBook, userBook } = formValues;
+    const { firstName, lastName, favoriteBook} = formValues;
+    // const userBookList : string[] = userBook.split(',');
 
     const updatedUser: UpdateUser = {
       firstName: firstName as string,
       lastName: lastName as string,
       favoriteBook: favoriteBook as string,
-      userBook: userBook as string[],
+      // userBook: userBookList as string[],
     };
+
+    console.log('send updated user to backend :', updatedUser)
     updateAuthorMutation.mutate(updatedUser as UpdateUser);
   };
 
   if (isLoading || isError || !books) {
     return <span>Loading...</span>;
   }
+  const favoriteBookOptions = books.map((book) => ({
+            value: book.id,
+            label: book.name,
+          }))
 
   return (
     <FormUpdate
@@ -73,23 +83,22 @@ export default function FormUpdateUsers({
           label: 'Livre favori',
           name: 'favoriteBook',
           type: 'select',
-          defaultValue: user.favoriteBook.id,
-          options: books.map((book) => ({
-            value: book.id,
-            label: book.name,
-          })),
+          required : false,
+          defaultValue: user.favoriteBook && user.favoriteBook.id,
+          options: [{label : "Aucun", value : ""}, ...favoriteBookOptions]
         },
-        {
-          label: 'Livres Ajoutés',
-          name: 'userBook',
-          type: 'select',
-          multiple: true,
-          defaultValues: user.userBook.map((book) => book.id),
-          options: books.map((book) => ({
-            value: book.id,
-            label: book.name,
-          })),
-        },
+        // {
+        //   label: 'Livres Ajoutés',
+        //   name: 'userBook',
+        //   type: 'select',
+        //   multiple: true,
+        //   required : false,
+        //   defaultValues: user.userBook && user.userBook.map((book) => book.id),
+        //   options: books.map((book) => ({
+        //     value: book.id,
+        //     label: book.name,
+        //   })),
+        // },
       ]}
     />
   );

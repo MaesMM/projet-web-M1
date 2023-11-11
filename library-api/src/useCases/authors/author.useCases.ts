@@ -21,6 +21,11 @@ export class AuthorUseCases {
 
   public async update(id: AuthorId, bodyContent: UpdateAuthorUseCasesInput ): Promise<PlainAuthorUseCasesOutput> {
     return this.authorRepository.updatePlain(id, bodyContent);
-  
+  }
+  public async create(bodyContent : {firstName : string, lastName : string}) : Promise<PlainAuthorUseCasesOutput>{
+    return this.authorRepository.createPlain(bodyContent);
+  }
+  public async delete(bodyContent : AuthorId) : Promise<PlainAuthorUseCasesOutput>{
+    return this.authorRepository.deleteAuthor(bodyContent);
   }
 }

@@ -1,17 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { UserId } from 'library-api/src/entities';
-import { UserRepository } from 'library-api/src/repositories/users/user.repository';
-import { PlainUserUseCasesOutput, UserUseCasesOutput } from './user.userCases';
+import { UserModel, PlainUserModel } from 'library-api/src/models';
+import { CreateUserRepositoryInput, UpdateUserRepositoryInput } from 'library-api/src/repositories/users/user.repository.type';
 
-@Injectable()
-export class UserUseCases {
-  constructor(private readonly userRepostitory: UserRepository) {}
-
-  public async getAllplain(): Promise<PlainUserUseCasesOutput[]> {
-    return this.userRepostitory.getAllPlain();
-  }
-
-  public async getById(id: UserId): Promise<UserUseCasesOutput> {
-    return this.userRepostitory.getById(id);
-  }
-}
+export type PlainUserUseCasesOutput = PlainUserModel;
+export type UserUseCasesOutput = UserModel;
+export type CreateUserUseCasesInput = CreateUserRepositoryInput;
+export type UpdateUserUseCasesInput = UpdateUserRepositoryInput;

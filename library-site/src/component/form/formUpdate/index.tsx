@@ -20,7 +20,6 @@ export default function FormUpdate({
   onSubmit,
   onCancel,
 }: Props): React.ReactElement {
-  data.map((obj) => console.log(obj.defaultValue, obj.defaultValues));
   return (
     <form onSubmit={(e): void => onSubmit(e)} className="flex flex-col gap-4">
       {data.map((obj) => (
@@ -30,6 +29,7 @@ export default function FormUpdate({
               name={obj.name}
               options={obj.options}
               defaultValue={obj.defaultValue}
+              required={obj.required}
             />
           )}
           {obj.type === 'select' && obj.multiple && (
@@ -37,6 +37,7 @@ export default function FormUpdate({
               name={obj.name}
               options={obj.options}
               defaultValues={obj.defaultValues}
+              required={obj.required}
             />
           )}
           {(obj.type === 'text' || obj.type === 'number') && (

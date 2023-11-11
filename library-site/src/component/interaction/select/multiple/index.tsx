@@ -4,12 +4,14 @@ import React, { useState } from 'react';
 type Props = {
   defaultValues?: string[];
   name: string;
+  required? : boolean
   options?: { value: string; label: string }[];
 };
 export default function SelectMultiple({
   name,
   defaultValues,
   options,
+  required
 }: Props): React.ReactElement {
   const [selectedOptions, setSelectedOptions] = useState<string[]>(
     defaultValues || [],
@@ -38,6 +40,7 @@ export default function SelectMultiple({
       <input name={name} type="hidden" value={selectedOptions} />
       <select
         multiple
+        required={required}
         value={selectedOptions}
         onChange={handleSelectChange}
         className="w-64 rounded-xl px-4 py-2"
@@ -55,4 +58,5 @@ export default function SelectMultiple({
 SelectMultiple.defaultProps = {
   defaultValues: undefined,
   options: undefined,
+  required: true,
 };
